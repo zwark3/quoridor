@@ -1,0 +1,16 @@
+public static void afficherPlateauDeJeu(char[][] t) {
+        char lettreColonne = 'A';
+        for (int ligne = 0; ligne < t.length; ligne++) {
+            if (ligne == 0) {
+                for (int i = 0; i < t.length; i++) {
+                    System.out.print(lettreColonne);
+                    lettreColonne++;
+                }
+                System.out.println();
+            }
+
+            for (int colonne = 0; colonne < t[ligne].length; colonne++) {
+                System.out.print(t[ligne][colonne]);
+            }
+            System.out.println("\t" +(ligne+1));
+        }
