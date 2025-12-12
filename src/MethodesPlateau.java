@@ -1,4 +1,4 @@
-public class MethodesJeu {
+public class MethodesPlateau {
 
     /* Cette méthode permet de mettre en place graphiquement le tableau (cases et pions) */
     public static void initialiserPlateau(char[][] plateau, int nbreJoueurs) {
@@ -31,9 +31,30 @@ public class MethodesJeu {
                 System.out.print(plateau[ligne][colonne]);
 
             // Affiche les coordonnées des lignes du plateau
-            System.out.println("\t" +(ligne+1));
+            System.out.println("\t" + (ligne + 1));
+
+        }
+    }
+   /*
+    public static void initialiserPlateauDeMur (char[][] plateauMur) {
+        for (int ligne = 0; ligne<plateauMur.length; ligne++) {
+            for (int colonne = 0; colonne <plateauMur[ligne].length; colonne++) {
+                plateauMur[ligne][colonne] = ' ';
             }
         }
+
+    }
+
+    public static void proposeMouvement(char[][] plateau) {
+        for (int cherchePionLigne = 0; cherchePionLigne < plateau.length; cherchePionLigne++) {
+            for (int cherchePionColonne = 0; cherchePionColonne < plateau[cherchePionLigne].length; cherchePionColonne++) {
+                if (plateau[cherchePionLigne][cherchePionColonne] == 'J') {
+
+                }
+            }
+        }
+    }
+    */
 }
 
 
