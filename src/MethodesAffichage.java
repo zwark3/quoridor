@@ -40,7 +40,8 @@ public class MethodesAffichage {
                 case 2:
                     break;
                 case 3:
-                    String reglesPresentation = """
+                    String reglesPresentation =
+                         """
                          REGLES DU JEU DU QUORIDOR
                          
                          PRESENTATION
@@ -49,13 +50,13 @@ public class MethodesAffichage {
                          Le jeu peut se jouer à 2 ou 4 joueurs.
                        
                          Chaque joueur se voit attribuer un pion, qui commence au milieu de sa
-                         rangée. ainsi qu'un nombre de murs.
+                         rangée, ainsi qu'un nombre de murs.
                          
                          MOUVEMENT DES PIONS
                          
                          Les pions bougent une case à la fois, horizontalement, verticalement, devant ou derrière.
-                         Les pions doivent esquiver les murs. Quand deux pions sont face à face et qu'aucun mur ne 
-                         les bloque, le joueur actuel peut sauter par-dessus le pion ennemi. 
+                         Les pions doivent esquiver les murs. Quand deux pions sont face à face et qu'aucun mur 
+                         ne les bloque, le joueur actuel peut sauter par-dessus le pion ennemi. 
                          
                          POSITIONNEMENT DES MURS
                          Les murs sont des élements plats de deux cases de large placées entre deux groupes de deux
@@ -66,7 +67,6 @@ public class MethodesAffichage {
                          
                          BUT
                          Le premier joueur qui atteint l'une des cases opposés à sa rangée de départ gagne.
-                         
                          """;
                     System.out.println(reglesPresentation);
                     break;
