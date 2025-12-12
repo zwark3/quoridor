@@ -1,10 +1,11 @@
 public class MethodesJeu {
 
+    /* Cette méthode permet de mettre en place graphiquement le tableau (cases et pions) */
     public static void initialiserPlateau(char[][] plateau, int nbreJoueurs) {
         for (int ligne = 0; ligne < plateau.length; ligne++)
-            for (int colonne = 0; colonne < plateau.length; colonne++) {
+            for (int colonne = 0; colonne < plateau[ligne].length; colonne++) {
 
-                // Remplace toutes les colonnes par V
+                // Remplace toutes les colonnes par points (vide)
                 plateau[ligne][colonne] = '.';
                 // Place les pions en fonction du nombre de joueur
                 plateau[0][plateau.length / 2] = 'R';
@@ -17,7 +18,7 @@ public class MethodesJeu {
         }
     }
 
-    public static void afficherPlateauDeJeu(char[][] t) {
+    public static void afficherPlateauDeJeu(char[][] plateau) {
 
         // Affiche les coordonnées des colonnes du plateau
         for (char lettreColonne = 'A'; lettreColonne < 'J'; lettreColonne++)
@@ -25,9 +26,9 @@ public class MethodesJeu {
 
         System.out.println();
 
-        for (int ligne = 0; ligne < t.length; ligne++) {
-            for (int colonne = 0; colonne < t.length; colonne++)
-                System.out.print(t[ligne][colonne]);
+        for (int ligne = 0; ligne < plateau.length; ligne++) {
+            for (int colonne = 0; colonne < plateau[ligne].length; colonne++)
+                System.out.print(plateau[ligne][colonne]);
 
             // Affiche les coordonnées des lignes du plateau
             System.out.println("\t" +(ligne+1));

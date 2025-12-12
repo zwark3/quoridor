@@ -1,4 +1,6 @@
 import java.util.Scanner;
+
+/* Cette méthode affiche le menu de présentation avec les différents choix possibles. */
 public class MethodesAffichage {
     public static void menuPresentation() {
         Scanner scan = new Scanner(System.in).useDelimiter("\n");
