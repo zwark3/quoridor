@@ -31,16 +31,7 @@ public class MethodesPlateau {
                 System.out.print(plateau[ligne][colonne]);
 
             // Affiche les coordonnées des lignes du plateau
-            System.out.println("\t" + (ligne + 1));
-
-        }
-    }
-   /*
-    public static void initialiserPlateauDeMur (char[][] plateauMur) {
-        for (int ligne = 0; ligne<plateauMur.length; ligne++) {
-            for (int colonne = 0; colonne <plateauMur[ligne].length; colonne++) {
-                plateauMur[ligne][colonne] = ' ';
-            }
+            System.out.println("\t" + (plateau.length - ligne));
         }
 
     }
