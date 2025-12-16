@@ -18,6 +18,7 @@ public class MethodesPlateau {
         }
     }
 
+    /*
     public static void afficherPlateauDeJeu(char[][] plateau) {
 
         // Affiche les coordonnées des colonnes du plateau
@@ -33,19 +34,43 @@ public class MethodesPlateau {
             // Affiche les coordonnées des lignes du plateau
             System.out.println("\t" + (plateau.length - ligne));
         }
-
-    }
-
-    public static void proposeMouvement(char[][] plateau) {
-        for (int cherchePionLigne = 0; cherchePionLigne < plateau.length; cherchePionLigne++) {
-            for (int cherchePionColonne = 0; cherchePionColonne < plateau[cherchePionLigne].length; cherchePionColonne++) {
-                if (plateau[cherchePionLigne][cherchePionColonne] == 'J') {
-
-                }
-            }
-        }
     }
     */
+
+    public static void afficherPlateauDeJeu(char[][] plateau) {
+        for (int ligne = 0; ligne < plateau.length; ligne++) {
+            for (int colonne = 0; colonne < plateau[ligne].length; colonne++) {
+                System.out.print(plateau[ligne][colonne] + "\t");
+            }
+            System.out.println();
+            System.out.println();
+        }
+    }
+
+    /*
+    public static void afficherMur(char[][] plateau) {
+        for (char[] chars : plateau) {
+            for (char aChar : chars) {
+                System.out.print(aChar);
+            }
+            System.out.println();
+        }
+    }
+     */
+
+
+    public static void placerMurHorizontal(char[][] murs, int ligne, int cellDepart) {
+        murs[ligne][cellDepart] = 'H';
+        murs[ligne][cellDepart + 1] = 'H';
+    }
+
+    public static void placerMurVertical(char[][] murs, int colonne, int cellDepart) {
+        murs[colonne][cellDepart] = 'V';
+        murs[colonne + 1][cellDepart] = 'V';
+    }
+
+    public static void bougerJoueur(int x, int y) {}
+
 }
 
 

@@ -72,8 +72,9 @@ public class MethodesAffichage {
                     break;
                 case 4:
                     String information = """
-                                    Fait par Cheema Mohammad et Pansan Abdel-Malik
-                                    Jeu du Quoridor 2025. Tous droits réservés.
+                                    Jeu du Quoridor. Fait par Mirko Marchesi.
+                                    Projet de  Cheema Mohammad et Pansan Abdel-Malik
+                                    © Gigamic. Tous droits réservés.
                                     """;
                     System.out.println(information);
                     break;
