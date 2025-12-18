@@ -1,6 +1,16 @@
+/**
+ * La classe MethodesPlateau contient des méthodes propres à
+ * la mise en place du plateau et des murs
+ */
+
 public class MethodesPlateau {
 
-    /* Cette méthode permet de mettre en place graphiquement le tableau (cases et pions) */
+    /**
+     * Remplace chacune des cases du plateau par des '.' et met en place les pions.
+     *
+     * @param plateau le plateau de jeu
+     *
+     */
     public static void initialiserPlateau(char[][] plateau) {
         for (int ligne = 0; ligne < plateau.length; ligne++)
             for (int colonne = 0; colonne < plateau[ligne].length; colonne++) {
@@ -10,45 +20,98 @@ public class MethodesPlateau {
         }
     }
 
-    public static void initialiserMur(char[][] murs) {
-        for (int ligne = 0; ligne < murs.length; ligne++)
-            for (int colonne = 0; colonne < murs[ligne].length; colonne++) {
+    /**
+     * Initialise un mur en remplacant chacune de ses cases par des espaces.
+     *
+     * @param mur le mur qu'on veut initialiser
+     */
+    public static void initialiserMur(char[][] mur) {
+        for (int ligne = 0; ligne < mur.length; ligne++)
+            for (int colonne = 0; colonne < mur[ligne].length; colonne++) {
                 // Remplace toutes les colonnes par espace (vide)
-                murs[ligne][colonne] = '-';
+                mur[ligne][colonne] = ' ';
             }
     }
 
-    public static void afficherPlateauDeJeu(char[][] plateau) {
+    /**
+     * Remplace chacune des cases des tableaux de murs horizontaux et verticaux par des espaces (vide).
+     *
+     * @param mursH le mur horizontal
+     *
+     * @param mursV le mur vertical
+     */
+    public static void initialiserMursHV(char[][] mursH, char[][] mursV) {
+        initialiserMur(mursH);
+        initialiserMur(mursV);
+    }
+
+    /** Affiche le plateau de jeu, avec les murs horizontaux, verticaux, pions, numéros de lignes (chiffres et lettres).
+     *
+     * @param plateau le plateau de jeu qu'on va afficher
+     *
+     * @param mursH les murs horizontaux qu'on doit représenter
+     *
+     * @param mursV les murs verticaux qu'on va afficher
+     */
+    public static void afficherPlateauDeJeu(char[][] plateau, char[][] mursH, char[][] mursV) {
         for (int ligne = 0; ligne < plateau.length; ligne++) {
             for (int colonne = 0; colonne < plateau[ligne].length; colonne++) {
                 System.out.print(plateau[ligne][colonne] + "\t");
+
+                if (colonne < 8) {
+                    System.out.print(mursV[ligne][colonne] + "\t");
+                }
             }
+
             System.out.println();
+            if (ligne < 8) {
+                for (int colonneMurH = 0; colonneMurH < mursH[ligne].length; colonneMurH++) {
+                    System.out.print(mursH[ligne][colonneMurH] + "\t\t");
+                }
+            }
+
             System.out.println();
         }
     }
 
-    public static void afficherMur(char[][] plateau) {
-        for (char[] plateau1D : plateau) {
-            for (char cellule : plateau1D) {
-                System.out.print(cellule);
-            }
-            System.out.println();
+
+    /**
+     * Met en place un mur horizontal à l'emplacement indiqué.
+     *
+     * @param mursH le mur horizontal où le mur horizontal sera placé
+     *
+     * @param ligne le numéro de la ligne de séparation ; le mur horizontal sera situé entre cette ligne et la prochaine
+     *
+     * @param colonne le numéro de la colonne où débute le mur horizontal
+     */
+    public static void placerMurHorizontal(char[][] mursH, int ligne, int colonne) {
+        mursH[ligne - 1 ][colonne - 1] = '-';
+        mursH[ligne - 1][colonne] = '-';
+    }
+
+    /**
+     * Met en place un mur vertical à l'emplacement indiqué.
+     *
+     * @param mursV le mur vertical où sera placé le mur vertical.
+     *
+     * @param ligne le numéro de la ligne où débute le mur vertical
+     *
+     * @param colonne le numéro de la colonne de séparation ; le mur vertical sera situé entre cette ligne et la prochaine
+     */
+    public static void placerMurVertical(char[][] mursV, int ligne, int colonne) {
+        mursV[ligne - 1][colonne - 1] = '|';
+        mursV[ligne][colonne - 1] = '|';
+    }
+
+
+    public static void bougerJoueur(char pion, int[][] posActuelle, char nouvellePos) {
+        switch (nouvellePos) {
+            case 'G':
+            case 'H':
+            case 'D':
+            case 'B':
         }
     }
-
-
-    public static void placerMurHorizontal(char[][] murs, int ligne, int cellDepart) {
-        murs[ligne - 1][cellDepart - 1] = 'H';
-        murs[ligne - 1][cellDepart] = 'H';
-    }
-
-    public static void placerMurVertical(char[][] murs, int colonne, int cellDepart) {
-        murs[colonne - 1][cellDepart - 1] = 'V';
-        murs[colonne][cellDepart - 1] = 'V';
-    }
-
-    public static void bougerJoueur(int x, int y) {}
 
 }
 

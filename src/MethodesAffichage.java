@@ -1,9 +1,18 @@
 import java.util.Scanner;
 
-/* Cette méthode affiche le menu de présentation avec les différents choixUtilisateur possibles. */
+/**
+ * La classe MethodesAffichage s'occupe de l'affichage
+ * du menu et des interactions avec l'utilisateur (mouvement des pions, placement des murs, ...)
+ */
 public class MethodesAffichage {
 
+    /**
+     * Affiche le menu du jeu, s'occupe des différentes
+     * interactions avec l'utilisateur (choix du jeu, mouvement des pions)
+     * et qu'ils concordent correctement avec la logique du jeu.
+     */
     public static void menuPresentation() {
+
         Scanner scan = new Scanner(System.in).useDelimiter("\n");
         int choixUtilisateur, choixOptions;
         String menuPresentation = """
@@ -24,8 +33,7 @@ public class MethodesAffichage {
             choixUtilisateur = scan.nextInt();
         } while (choixUtilisateur < 1 || choixUtilisateur > 5);
 
-        // L'tuilisateur a pris un choixUtilisateur correct.
-
+        // L'tuilisateur a pris un choixUtilisateur correct. Le programme continue normalement.
         boolean sortirMenu = false;
 
         while (!sortirMenu) {

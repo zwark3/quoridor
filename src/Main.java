@@ -1,22 +1,13 @@
 public class Main {
     public static void main(String[] args) {
         char[][] plateau = new char[9][9];
-        char[][] murs = new char[9][9];
-
-
-        MethodesPlateau.initialiserMur(murs);
-        MethodesPlateau.placerMurVertical(murs, 1, 1);
-        MethodesPlateau.afficherMur(murs);
-
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-
-
+        char[][] mursV = new char[9][8];
+        char[][] mursH = new char[8][9];
         MethodesPlateau.initialiserPlateau(plateau);
-        MethodesPlateau.afficherPlateauDeJeu(plateau);
-
+        MethodesPlateau.initialiserMursHV(mursH, mursV);
+        MethodesPlateau.placerMurHorizontal(mursH, 1, 1);
+        MethodesPlateau.placerMurVertical(mursH, 2, 8);
+        MethodesPlateau.afficherPlateauDeJeu(plateau, mursH, mursV);
     }
 }
 
