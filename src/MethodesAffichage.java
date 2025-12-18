@@ -14,7 +14,7 @@ public class MethodesAffichage {
     public static void menuPresentation() {
 
         Scanner scan = new Scanner(System.in).useDelimiter("\n");
-        int choixUtilisateur, choixOptions;
+        int choixUtilisateur, nombreJoueurs;
         String menuPresentation = """
                * * * * * * * * * * * * * * * * * * * *
                *   BIENVENUE SUR LE JEU DU QUORIDOR  *
@@ -41,8 +41,8 @@ public class MethodesAffichage {
                 case 1:
                     do {
                         System.out.println("Choisir le nombre de joueurs (2 ou 4)");
-                        choixOptions = scan.nextInt();
-                    } while (choixOptions < 2 || choixOptions > 4);
+                        nombreJoueurs = scan.nextInt();
+                    } while (nombreJoueurs < 2 || nombreJoueurs > 4);
                     sortirMenu = true;
                     break;
                 case 2:
@@ -101,6 +101,5 @@ public class MethodesAffichage {
 
         }
 
-        System.out.println("À bientôt ! ");
     }
 }

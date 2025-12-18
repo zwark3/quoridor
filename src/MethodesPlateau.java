@@ -11,24 +11,33 @@ public class MethodesPlateau {
      * @param plateau le plateau de jeu
      *
      */
-    public static void initialiserPlateau(char[][] plateau) {
-        for (int ligne = 0; ligne < plateau.length; ligne++)
+    public static void initialiserPlateau(char[][] plateau, int nbreJoueurs) {
+        for (int ligne = 0; ligne < plateau.length; ligne++) {
             for (int colonne = 0; colonne < plateau[ligne].length; colonne++) {
-
-                // Remplace toutes les colonnes par points (vide)
                 plateau[ligne][colonne] = '.';
+            }
         }
+
+        // Place les pions en fonction du nombre de joueur
+        plateau[0][plateau.length / 2] = 'R';
+        plateau[plateau.length - 1][plateau.length / 2] = 'J';
+
+        if (nbreJoueurs == 4) {
+            plateau[plateau.length / 2][0] = 'B';
+            plateau[plateau.length / 2][plateau.length - 1] = 'O';
+
+        }
+
     }
 
     /**
-     * Initialise un mur en remplacant chacune de ses cases par des espaces.
+     * Initialise un mur en remplacant chacune de ses cases par des ' ' (espace).
      *
      * @param mur le mur qu'on veut initialiser
      */
     public static void initialiserMur(char[][] mur) {
         for (int ligne = 0; ligne < mur.length; ligne++)
             for (int colonne = 0; colonne < mur[ligne].length; colonne++) {
-                // Remplace toutes les colonnes par espace (vide)
                 mur[ligne][colonne] = ' ';
             }
     }
@@ -58,12 +67,14 @@ public class MethodesPlateau {
             for (int colonne = 0; colonne < plateau[ligne].length; colonne++) {
                 System.out.print(plateau[ligne][colonne] + "\t");
 
+                /* Affiche les murs verticaux */
                 if (colonne < 8) {
                     System.out.print(mursV[ligne][colonne] + "\t");
                 }
             }
 
             System.out.println();
+
             if (ligne < 8) {
                 for (int colonneMurH = 0; colonneMurH < mursH[ligne].length; colonneMurH++) {
                     System.out.print(mursH[ligne][colonneMurH] + "\t\t");
@@ -103,15 +114,46 @@ public class MethodesPlateau {
         mursV[ligne][colonne - 1] = '|';
     }
 
+    /**
+     * Effectue à un pion un changement de position.
+     *
+     * @param plateauJeu le plateau de jeu où on va changer la place du pion
+     *
+     * @param pion le pion qu'on va bouger
+     *
+     * @param mouvement le mouvement a effectué ('G': Gauche, 'H': Haut, 'D': Droit, 'B': Bas);
+     *
+     */
+    public static void bougerJoueur(char[][] plateauJeu, char pion, char mouvement) {
+        int ligneP = 0, colonneP = 0;
 
-    public static void bougerJoueur(char pion, int[][] posActuelle, char nouvellePos) {
-        switch (nouvellePos) {
-            case 'G':
-            case 'H':
-            case 'D':
-            case 'B':
+        for (int ligne = 0; ligne < plateauJeu.length; ligne++) {
+            for (int colonne = 0; colonne < plateauJeu[ligne].length; colonne++) {
+                if (plateauJeu[ligne][colonne] == pion) {
+                    ligneP = ligne;
+                    colonneP = colonne;
+                }
+            }
         }
+        switch (mouvement) {
+            case 'G':
+                plateauJeu[ligneP][colonneP - 1] = plateauJeu[ligneP][colonneP];
+                break;
+            case 'H':
+                plateauJeu[ligneP - 1][colonneP] = plateauJeu[ligneP][colonneP];
+                break;
+            case 'D':
+                plateauJeu[ligneP][colonneP + 1] = plateauJeu[ligneP][colonneP];
+                break;
+            case 'B':
+                plateauJeu[ligneP + 1][colonneP] = plateauJeu[ligneP][colonneP];
+                break;
+        }
+
+        plateauJeu[ligneP][colonneP] = '.';
     }
+
+
 
 }
 
