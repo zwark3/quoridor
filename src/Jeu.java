@@ -1,41 +1,56 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Jeu {
     String[][] plateau;
     String[][] mursH;
     String[][] mursV;
 
-    Jeu(int nombreJoueurs) {
+    Jeu() {
         this.plateau = new String[9][9];
         this.mursH = new String[8][9];
         this.mursV = new String[9][8];
     }
 
+    public ArrayList<Joueur> creerJoueurs(int nombreJoueurs) {
+        ArrayList<Joueur> listeJoueurs = new ArrayList<>();
+
+        listeJoueurs.add(new Joueur("J1", "R", "\u001B[31m", new int[]{0, 4}, 10));
+        listeJoueurs.add(new Joueur("J2", "B", "\u001B[36m", new int[]{8, 4}, 10));
+
+        if (nombreJoueurs == 4) {
+            listeJoueurs.add(new Joueur("J3", "V", "\u001B[32m", new int[]{4, 0}, 10));
+            listeJoueurs.add(new Joueur("J4", "J", "\u001B[93m", new int[]{4, 8}, 10));
+
+            // Change le nombre de murs
+            for (Joueur joueur : listeJoueurs) {
+                joueur.nombreMurs = 5;
+            }
+        }
+
+        return listeJoueurs;
+    }
+
     public void initialiserJeu(ArrayList<Joueur> tabJoueurs) {
-        for (int ligne = 0; ligne < this.plateau.length; ligne++) {
-            for (int colonne = 0; colonne < this.plateau[ligne].length; colonne++) {
-                this.plateau[ligne][colonne] = ".";
-            }
+
+        for (String[] elePlateau : this.plateau) {
+            Arrays.fill(elePlateau, ".");
         }
 
-        initialiserMur(this.mursH);
-        initialiserMur(this.mursV);
-        placerJoueur(tabJoueurs);
-    }
-
-    public void initialiserMur(String[][] mur) {
-        for (int ligne = 0; ligne < mur.length; ligne++) {
-            for (int colonne = 0; colonne < mur[ligne].length; colonne++) {
-                mur[ligne][colonne] = " ";
-            }
+        for (String[] murHoriz : this.mursH) {
+            Arrays.fill(murHoriz, " ");
         }
-    }
 
-    public void placerJoueur(ArrayList<Joueur> tabJoueurs) {
+        for (String[] mursVert : this.mursV) {
+            Arrays.fill(mursVert, " ");
+        }
+
         for (Joueur joueur : tabJoueurs) {
             this.plateau[joueur.coordsPion[0]][joueur.coordsPion[1]] = joueur.pion;
         }
     }
+
 
     public void afficherPlateauJeu(ArrayList<Joueur> tabJoueurs) {
         for (int ligne = 0; ligne < this.plateau.length; ligne++) {
@@ -68,35 +83,93 @@ public class Jeu {
         }
     }
 
-    public void placerMurHorizontal(int ligne, int colonne) {
-        this.mursH[ligne - 1 ][colonne - 1] = "—";
-        this.mursH[ligne - 1][colonne] = "—";
+    public boolean murValide(int ligneMur, int colonneMur) {
+
+        // Le pion se retrouvera en dehors du plateau.
+        if (ligneMur < 1 || ligneMur > 9 || colonneMur < 1 || colonneMur > 9) {
+            System.out.println("Erreur : valeurs hors du plateau !");
+            return false;
+        }
+        // Un mur est déjà présent.
+        else if (this.mursH[ligneMur - 1][colonneMur - 1].equals("—") || this.mursH[ligneMur - 1][colonneMur].equals("—")
+                || this.mursV[ligneMur - 1][colonneMur - 1].equals("|") || this.mursV[ligneMur][colonneMur - 1].equals("|")) {
+            System.out.println("Erreur : un mur est déjà présent ! ");
+            return false;
+
+        } else {
+            return true;
+        }
     }
 
-    public void placerMurVertical(int ligne, int colonne) {
+    public void placerMurHorizontal(Joueur joueur, int ligne, int colonne) {
+        this.mursH[ligne - 1 ][colonne - 1] = "—";
+        this.mursH[ligne - 1][colonne] = "—";
+
+        // On enlève un mur au joueur.
+        joueur.nombreMurs--;
+    }
+
+    public void placerMurVertical(Joueur joueur, int ligne, int colonne) {
         this.mursV[ligne - 1][colonne - 1] = "|";
         this.mursV[ligne][colonne - 1] = "|";
+
+        // On enlève un mur au joueur.
+        joueur.nombreMurs--;
+    }
+
+    public boolean mouvementValide(String typeMouvement, int[] coordsMvmt) {
+        List<String> mvmtCorrects = Arrays.asList("G", "H", "D", "B");
+
+        // Le mouvement n'existe pas
+        if (!mvmtCorrects.contains(typeMouvement)) {
+            System.out.println("Erreur : type de mouvement invalide !");
+            return false;
+        }
+        // Le pion sera en dehors du plateau
+        else if (coordsMvmt[0] == -1 || coordsMvmt[0] == 9 || coordsMvmt[1] == -1 | coordsMvmt[1] == 9) {
+            System.out.println("Erreur : le pion sort du plateau ! ");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     public int[] coordsProchainMouvement(Joueur joueur, String typeMouvement) {
         int[] coordsMvmt = new int[2];
 
-        switch (typeMouvement.toUpperCase().trim()) {
+        switch (typeMouvement) {
             case "G":
                 coordsMvmt[0] = joueur.coordsPion[0];
                 coordsMvmt[1] = joueur.coordsPion[1] - 1;
+
+                if (coordsMvmt[1] != -1 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
+                        coordsMvmt[1]--;
                 break;
+
             case "H":
                 coordsMvmt[0] = joueur.coordsPion[0] - 1;
                 coordsMvmt[1] = joueur.coordsPion[1];
+
+                if (coordsMvmt[0] != -1 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
+                        coordsMvmt[0]--;
                 break;
+
             case "D":
                 coordsMvmt[0] = joueur.coordsPion[0];
                 coordsMvmt[1] = joueur.coordsPion[1] + 1;
+
+                if (coordsMvmt[1] != 9 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
+                        coordsMvmt[1]++;
                 break;
-            case "B":
+
+            case"B":
                 coordsMvmt[0] = joueur.coordsPion[0] + 1;
                 coordsMvmt[1] = joueur.coordsPion[1];
+
+                if (coordsMvmt[0] != 9 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
+                        coordsMvmt[0]++;
+                break;
         }
 
         return coordsMvmt;
@@ -108,7 +181,16 @@ public class Jeu {
 
         joueur.coordsPion[0] = coordsProchainMvmt[0];
         joueur.coordsPion[1] = coordsProchainMvmt[1];
+    }
 
+    public boolean mancheFinie(ArrayList<Joueur> joueurs) {
+        if (joueurs.get(0).coordsPion[0] == 8 || joueurs.get(1).coordsPion[0] == 0)
+                return true;
+
+         if (joueurs.size() == 4)
+             return joueurs.get(2).coordsPion[0] == 8 || joueurs.get(3).coordsPion[0] == 0;
+
+        return false;
     }
 
 }
