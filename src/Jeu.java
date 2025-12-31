@@ -91,7 +91,7 @@ public class Jeu {
             return false;
         }
         // Un mur est déjà présent.
-        else if (this.mursH[ligneMur - 1][colonneMur - 1].equals("—") || this.mursH[ligneMur - 1][colonneMur].equals("—")
+            else if (this.mursH[ligneMur - 1][colonneMur - 1].equals("—") || this.mursH[ligneMur - 1][colonneMur].equals("—")
                 || this.mursV[ligneMur - 1][colonneMur - 1].equals("|") || this.mursV[ligneMur][colonneMur - 1].equals("|")) {
             System.out.println("Erreur : un mur est déjà présent ! ");
             return false;
@@ -117,7 +117,67 @@ public class Jeu {
         joueur.nombreMurs--;
     }
 
-    public boolean mouvementValide(String typeMouvement, int[] coordsMvmt) {
+    public boolean murBloqueMouvement(Joueur joueur, int[] coordsMvmt) {
+
+        boolean mvmtVertical = joueur.coordsPion[0] != coordsMvmt[0];
+
+        int ligne = joueur.coordsPion[0];
+        int colonne = joueur.coordsPion[1];
+
+        int ligneArv = coordsMvmt[0];
+        int colonneArv = coordsMvmt[1];
+
+        // Mouvement vertical : on regarde les murs horizontaux
+        if (mvmtVertical) {
+            // On va de bas en haut : il suffit juste de regarder s'il y a un mur aux coordonnées du mouvement final.
+            if (ligne - ligneArv > 0)
+                return !this.mursH[ligneArv][colonneArv].equals(" ");
+                // On va de haut en bas : on doit regarder s'il y a un mur aux coordonnées du mouvement initial
+            else
+                return !this.mursH[ligne][colonne].equals(" ");
+        }
+        // Mouvement horizontal : on regarde les murs verticaux
+        else {
+            // On va de droite à gauche : il suffit juste de regarder s'il y a un mur aux coordonnées du mouvement final.
+            if (colonne - colonneArv > 0)
+                return !this.mursV[ligneArv][colonneArv].equals(" ");
+                // On va de gauche à droite : on doit regarder s'il y a un mur aux coordonnées du mouvement initial
+            else
+                return !this.mursV[ligne][colonne].equals(" ");
+        }
+    }
+
+    /*
+    public ArrayList<int[]> coupsLegauxPion(Joueur joueur) {
+        ArrayList<int[]> listeCoupsLegaux = new ArrayList<>();
+
+        int lignePionJ = joueur.coordsPion[0];
+        int colonnePionJ = joueur.coordsPion[1];
+
+        int[] mvmtGauche = {lignePionJ, colonnePionJ - 1};
+        int[] mvmtHaut = {lignePionJ - 1, colonnePionJ};
+        int[] mvmtDroit = {lignePionJ, colonnePionJ + 1};
+        int[] mvmtBas = {lignePionJ + 1, colonnePionJ};
+
+        // Mouvement à gauche
+        if (colonnePionJ != 0 && !murBloqueMouvement(joueur, mvmtGauche))
+            listeCoupsLegaux.add(mvmtGauche);
+        // Mouvement haut
+        if (lignePionJ != 0 && !murBloqueMouvement(joueur, mvmtHaut))
+            listeCoupsLegaux.add(mvmtHaut);
+        // Mouvement à droite
+        if (colonnePionJ != 8 && !murBloqueMouvement(joueur, mvmtDroit))
+            listeCoupsLegaux.add(mvmtDroit);
+        // Mouvement en bas
+        if (lignePionJ != 8 && !murBloqueMouvement(joueur, mvmtBas))
+            listeCoupsLegaux.add(mvmtBas);
+
+        return listeCoupsLegaux;
+    }
+
+     */
+
+    public boolean mouvementValide(Joueur joueur, String typeMouvement, int[] coordsMvmt) {
         List<String> mvmtCorrects = Arrays.asList("G", "H", "D", "B");
 
         // Le mouvement n'existe pas
@@ -130,6 +190,12 @@ public class Jeu {
             System.out.println("Erreur : le pion sort du plateau ! ");
             return false;
         }
+        // Un mur bloque le joueur
+        else if(murBloqueMouvement(joueur, coordsMvmt)) {
+            System.out.println("Erreur : un mur bloque le passage ! ");
+            return false;
+        }
+        // Le mouvement est valide
         else {
             return true;
         }

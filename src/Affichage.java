@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Affichage {
+
     public static Scanner sc = new Scanner(System.in).useDelimiter("\n");
 
     public static void menuPresentation() {
@@ -89,17 +90,23 @@ public class Affichage {
         } while (nombreJoueurs < 2 || nombreJoueurs > 4 );
 
         // Début du jeu
+        int indxJoueurActuel;
+        Joueur joueurActuel;
+
         Jeu moteurJeu = new Jeu();
         ArrayList<Joueur> listeJoueurs = moteurJeu.creerJoueurs(nombreJoueurs);
         moteurJeu.initialiserJeu(listeJoueurs);
+
+        indxJoueurActuel = -1;
+        joueurActuel = null;
 
         int tour = 0;
 
         // Boucle de jeu
         while (!moteurJeu.mancheFinie(listeJoueurs)) {
             // Détermination du joueur actuel
-            int indxJoueurActuel = tour % listeJoueurs.size();
-            Joueur joueurActuel = listeJoueurs.get(indxJoueurActuel);
+            indxJoueurActuel = tour % listeJoueurs.size();
+            joueurActuel = listeJoueurs.get(indxJoueurActuel);
 
             System.out.println();
 
@@ -136,10 +143,10 @@ public class Affichage {
 
                 do {
                     System.out.print("Choissisez une direction (G -> GAUCHE, H -> HAUT, D -> DROITE, B -> BAS) : ");
-                    mvmtPion = sc.nextLine();
-                    coordsMvmtSuivant = moteurJeu.coordsProchainMouvement(joueurActuel, mvmtPion.toUpperCase().trim());
+                    mvmtPion = sc.nextLine().toUpperCase().trim();
+                    coordsMvmtSuivant = moteurJeu.coordsProchainMouvement(joueurActuel, mvmtPion);
 
-                } while (!moteurJeu.mouvementValide(mvmtPion,coordsMvmtSuivant));
+                } while (!moteurJeu.mouvementValide(joueurActuel, mvmtPion,coordsMvmtSuivant));
 
                 // Le pion a été déplacé de manière correcte.
                 moteurJeu.bougerPion(joueurActuel, coordsMvmtSuivant);
@@ -173,6 +180,9 @@ public class Affichage {
 
             tour++;
         }
+        // Fin de partie
+        System.out.println(joueurActuel.nomJ + " a remporté la partie !");
+        System.out.println("Nombre de coups total : " + (tour+1));
 
     }
 
