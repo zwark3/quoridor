@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Affichage {
@@ -113,6 +114,7 @@ public class Affichage {
             // Information sur chaque joueur à chaque tour
             for (Joueur joueur : listeJoueurs) {
                 System.out.println(joueur.nomJ + " (" + joueur.pion + ") | murs restants : " + joueur.nombreMurs);
+                System.out.println(joueur.nomJ + " coordonnées possible : " + Arrays.deepToString(moteurJeu.coupsLegauxPion(joueur.coordsPion).toArray()));
             }
 
             System.out.println();
@@ -120,6 +122,7 @@ public class Affichage {
             // Affichage du tour et du joueur actuel
             System.out.println("Tour nº" + (tour + 1));
             System.out.println("Joueur actuel : " + joueurActuel.nomJ);
+            System.out.println("Chemin possible : " + moteurJeu.existeCheminVersFin(listeJoueurs));
 
             System.out.println();
 
@@ -167,15 +170,18 @@ public class Affichage {
 
                     System.out.print("Écrivez le numéro de la colonne : ");
                     colonneMur = sc.nextInt();
-                } while (!moteurJeu.murValide(ligneMur, colonneMur));
+                } while (!moteurJeu.murValide(listeJoueurs, typeMur, ligneMur, colonneMur));
 
                 // Le mur a été placé de manière correcte.
 
                 if (typeMur == 1) {
-                    moteurJeu.placerMurHorizontal(joueurActuel, ligneMur, colonneMur);
+                    moteurJeu.placerMurHorizontal(ligneMur, colonneMur);
                 } else {
-                    moteurJeu.placerMurVertical(joueurActuel, ligneMur, colonneMur);
+                    moteurJeu.placerMurVertical(ligneMur, colonneMur);
                 }
+
+                // On enlève un mur au joueur.
+                joueurActuel.nombreMurs--;
             }
 
             tour++;

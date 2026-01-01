@@ -83,46 +83,65 @@ public class Jeu {
         }
     }
 
-    public boolean murValide(int ligneMur, int colonneMur) {
+    public boolean murValide(ArrayList<Joueur> listeJoueurs, int typeMur, int ligneUtil, int colonneUtil) {
+
+        int ligneMur = ligneUtil - 1;
+        int colonneMur = colonneUtil - 1;
+
+        boolean cheminValide;
 
         // Le pion se retrouvera en dehors du plateau.
-        if (ligneMur < 1 || ligneMur > 9 || colonneMur < 1 || colonneMur > 9) {
+        if (ligneUtil < 1 || ligneUtil > 9 || colonneUtil < 1 || colonneUtil > 9) {
             System.out.println("Erreur : valeurs hors du plateau !");
             return false;
         }
         // Un mur est déjà présent.
-            else if (this.mursH[ligneMur - 1][colonneMur - 1].equals("—") || this.mursH[ligneMur - 1][colonneMur].equals("—")
-                || this.mursV[ligneMur - 1][colonneMur - 1].equals("|") || this.mursV[ligneMur][colonneMur - 1].equals("|")) {
+        if (!this.mursH[ligneMur][colonneMur].equals(" ") || !this.mursV[ligneMur][colonneMur].equals(" ")) {
             System.out.println("Erreur : un mur est déjà présent ! ");
             return false;
-
-        } else {
-            return true;
         }
+
+        if (typeMur == 1)
+            placerMurHorizontal(ligneUtil, colonneUtil);
+        else
+            placerMurVertical(ligneUtil, colonneUtil);
+
+        cheminValide = existeCheminVersFin(listeJoueurs);
+
+        if (typeMur == 1) {
+            this.mursH[ligneUtil - 1 ][colonneUtil - 1] = " ";
+            this.mursH[ligneUtil - 1][colonneUtil] = " ";
+        }
+        else {
+            this.mursV[ligneUtil - 1 ][colonneUtil - 1] = " ";
+            this.mursV[ligneUtil][colonneUtil - 1] = " ";
+        }
+
+        if (!cheminValide) {
+            System.out.println("Erreur : ce mur bloque un joueur !");
+            return false;
+        }
+
+        return true;
     }
 
-    public void placerMurHorizontal(Joueur joueur, int ligne, int colonne) {
+    public void placerMurHorizontal(int ligne, int colonne) {
         this.mursH[ligne - 1 ][colonne - 1] = "—";
         this.mursH[ligne - 1][colonne] = "—";
 
-        // On enlève un mur au joueur.
-        joueur.nombreMurs--;
     }
 
-    public void placerMurVertical(Joueur joueur, int ligne, int colonne) {
+    public void placerMurVertical(int ligne, int colonne) {
         this.mursV[ligne - 1][colonne - 1] = "|";
         this.mursV[ligne][colonne - 1] = "|";
-
-        // On enlève un mur au joueur.
-        joueur.nombreMurs--;
     }
 
-    public boolean murBloqueMouvement(Joueur joueur, int[] coordsMvmt) {
+    public boolean murBloqueMouvement(int[] coordsDep, int[] coordsMvmt) {
 
-        boolean mvmtVertical = joueur.coordsPion[0] != coordsMvmt[0];
+        boolean mvmtVertical = coordsDep[0] != coordsMvmt[0];
 
-        int ligne = joueur.coordsPion[0];
-        int colonne = joueur.coordsPion[1];
+        int ligne = coordsDep[0];
+        int colonne = coordsDep[1];
 
         int ligneArv = coordsMvmt[0];
         int colonneArv = coordsMvmt[1];
@@ -147,35 +166,126 @@ public class Jeu {
         }
     }
 
-    /*
-    public ArrayList<int[]> coupsLegauxPion(Joueur joueur) {
+    public ArrayList<int[]> coupsLegauxPion(int[] coordsPion) {
         ArrayList<int[]> listeCoupsLegaux = new ArrayList<>();
 
-        int lignePionJ = joueur.coordsPion[0];
-        int colonnePionJ = joueur.coordsPion[1];
+        int lignePionJ = coordsPion[0];
+        int colonnePionJ = coordsPion[1];
 
         int[] mvmtGauche = {lignePionJ, colonnePionJ - 1};
-        int[] mvmtHaut = {lignePionJ - 1, colonnePionJ};
         int[] mvmtDroit = {lignePionJ, colonnePionJ + 1};
+
+        int[] mvmtGaucheSaut = {lignePionJ, colonnePionJ - 2};
+        int[] mvmtDroitSaut = {lignePionJ, colonnePionJ + 2};
+
+        int[] mvmtHaut = {lignePionJ - 1, colonnePionJ};
         int[] mvmtBas = {lignePionJ + 1, colonnePionJ};
 
+        int[] mvmtHautSaut = {lignePionJ - 2, colonnePionJ};
+        int[] mvmtBasSaut = {lignePionJ + 2, colonnePionJ};
+
+
+
         // Mouvement à gauche
-        if (colonnePionJ != 0 && !murBloqueMouvement(joueur, mvmtGauche))
-            listeCoupsLegaux.add(mvmtGauche);
+        if (colonnePionJ != 0 && !murBloqueMouvement(coordsPion, mvmtGauche)) {
+            if (!this.plateau[lignePionJ][colonnePionJ - 1].equals(".")) {
+                if ((colonnePionJ - 2 > -1 && !murBloqueMouvement(mvmtGauche, mvmtGaucheSaut)) ) {
+                    listeCoupsLegaux.add(mvmtGaucheSaut);
+                }
+            }
+            else
+                listeCoupsLegaux.add(mvmtGauche);
+        }
         // Mouvement haut
-        if (lignePionJ != 0 && !murBloqueMouvement(joueur, mvmtHaut))
-            listeCoupsLegaux.add(mvmtHaut);
+        if (lignePionJ != 0 && !murBloqueMouvement(coordsPion, mvmtHaut)) {
+            if (!this.plateau[lignePionJ - 1][colonnePionJ].equals(".")) {
+                if (lignePionJ - 2 > -1 && !murBloqueMouvement(mvmtHaut, mvmtHautSaut)) {
+                    listeCoupsLegaux.add(mvmtHautSaut);
+                }
+            }
+            else
+                listeCoupsLegaux.add(mvmtHaut);
+        }
         // Mouvement à droite
-        if (colonnePionJ != 8 && !murBloqueMouvement(joueur, mvmtDroit))
-            listeCoupsLegaux.add(mvmtDroit);
+        if (colonnePionJ != 8 && !murBloqueMouvement(coordsPion, mvmtDroit)) {
+            if (!this.plateau[lignePionJ][colonnePionJ + 1].equals(".")) {
+                if (colonnePionJ + 2 < 9 && !murBloqueMouvement(mvmtDroit, mvmtDroitSaut)) {
+                    listeCoupsLegaux.add(mvmtDroitSaut);
+                }
+
+            } else
+                listeCoupsLegaux.add(mvmtDroit);
+        }
         // Mouvement en bas
-        if (lignePionJ != 8 && !murBloqueMouvement(joueur, mvmtBas))
-            listeCoupsLegaux.add(mvmtBas);
+        if (lignePionJ != 8 && !murBloqueMouvement(coordsPion, mvmtBas))
+            if (!this.plateau[lignePionJ + 1][colonnePionJ].equals(".")) {
+                if (lignePionJ + 2 < 9 && !murBloqueMouvement(mvmtBas, mvmtBasSaut)) {
+                    listeCoupsLegaux.add(mvmtBasSaut);
+                }
+            } else
+                listeCoupsLegaux.add(mvmtBas);
 
         return listeCoupsLegaux;
     }
 
-     */
+    public boolean existeCheminVersFin(ArrayList<Joueur> listeJoueurs) {
+
+        int ligneGagnante, colonneGagnante;
+        boolean[][] mursVisites;
+
+        for (Joueur joueur : listeJoueurs) {
+
+            mursVisites  = new boolean[9][9];
+            for (boolean[] lignesMursVisites : mursVisites) {
+                Arrays.fill(lignesMursVisites, false);
+            }
+
+            int rangJoueur = listeJoueurs.indexOf(joueur);
+            ligneGagnante = -1;
+            colonneGagnante = -1;
+
+            switch (rangJoueur) {
+                case 0:
+                    ligneGagnante = 8;
+                    break;
+                case 1:
+                    ligneGagnante = 0;
+                    break;
+                case 2:
+                    colonneGagnante = 8;
+                    break;
+                case 3:
+                    colonneGagnante = 0;
+                    break;
+            }
+
+            if (!rechercheChemin(joueur.coordsPion, mursVisites, ligneGagnante, colonneGagnante))
+                return false;
+        }
+
+        return true;
+
+    }
+
+    public boolean rechercheChemin(int[] coords, boolean[][] mur, int ligneG, int colonneG) {
+        ArrayList<int[]> listeCoupsAutorises = coupsLegauxPion(coords);
+
+        for (int[] tabCoupLegal : listeCoupsAutorises) {
+
+            if (!mur[tabCoupLegal[0]][tabCoupLegal[1]]) {
+                if (ligneG != -1 && tabCoupLegal[0] == ligneG || colonneG != -1 && tabCoupLegal[1] == colonneG)
+                    return true;
+
+                mur[tabCoupLegal[0]][tabCoupLegal[1]] = true;
+
+                if (rechercheChemin(tabCoupLegal, mur, ligneG, colonneG)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     public boolean mouvementValide(Joueur joueur, String typeMouvement, int[] coordsMvmt) {
         List<String> mvmtCorrects = Arrays.asList("G", "H", "D", "B");
@@ -191,7 +301,7 @@ public class Jeu {
             return false;
         }
         // Un mur bloque le joueur
-        else if(murBloqueMouvement(joueur, coordsMvmt)) {
+        else if(murBloqueMouvement(joueur.coordsPion, coordsMvmt)) {
             System.out.println("Erreur : un mur bloque le passage ! ");
             return false;
         }
