@@ -126,9 +126,17 @@ public class Jeu {
                 return false;
             }
 
-            if (!this.mursV[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursV[ligneUtil - 2][colonneUtil - 1].equals(" ")) {
-                System.out.println("Erreur : intersection avec un mur vertical !");
-                return false;
+            if (ligneUtil > 1) {
+                if (!this.mursV[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursV[ligneUtil - 2][colonneUtil - 1].equals(" ")) {
+                    System.out.println("Erreur : intersection avec un mur vertical !");
+                    return false;
+                }
+            }
+            else {
+                if (!this.mursV[ligneUtil - 1][colonneUtil - 1].equals(" ")) {
+                    System.out.println("Erreur : intersection avec un mur vertical !");
+                    return false;
+                }
             }
 
             placerMurHorizontal(ligneUtil, colonneUtil);
@@ -140,9 +148,18 @@ public class Jeu {
                 return false;
             }
 
-            if (!this.mursH[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursH[ligneUtil - 1][colonneUtil - 2].equals(" ")) {
-                System.out.println("Erreur : intersection avec un mur horizontal ! !");
-                return false;
+            if (colonneUtil > 1) {
+                if (!this.mursH[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursH[ligneUtil - 1][colonneUtil - 2].equals(" ")) {
+                    System.out.println("Erreur : intersection avec un mur horizontal ! !");
+                    return false;
+                }
+            }
+
+            else {
+                if (!this.mursH[ligneUtil - 1][colonneUtil - 1].equals(" ")) {
+                    System.out.println("Erreur : intersection avec un mur horizontal !");
+                    return false;
+                }
             }
 
             placerMurVertical(ligneUtil, colonneUtil);
@@ -151,12 +168,10 @@ public class Jeu {
         cheminValide = existeCheminVersFin(listeJoueurs);
 
         if (typeMur == 1) {
-            this.mursH[ligneUtil - 1 ][colonneUtil - 1] = " ";
-            this.mursH[ligneUtil - 1][colonneUtil] = " ";
+            retirerMurHorizontal(ligneUtil, colonneUtil);
         }
         else {
-            this.mursV[ligneUtil - 1 ][colonneUtil - 1] = " ";
-            this.mursV[ligneUtil][colonneUtil - 1] = " ";
+            retirerMurVertical(ligneUtil, colonneUtil);
         }
 
         if (!cheminValide) {
@@ -180,6 +195,11 @@ public class Jeu {
 
     }
 
+    public void retirerMurHorizontal(int ligne, int colonne) {
+        this.mursH[ligne - 1 ][colonne - 1] = " ";
+        this.mursH[ligne - 1][colonne] = " ";
+    }
+
     /**
      * Met en place un mur vertical à l'emplacement indiqué.
      *
@@ -191,6 +211,11 @@ public class Jeu {
     public void placerMurVertical(int ligne, int colonne) {
         this.mursV[ligne - 1][colonne - 1] = "|";
         this.mursV[ligne][colonne - 1] = "|";
+    }
+
+    public void retirerMurVertical(int ligne, int colonne) {
+        this.mursV[ligne - 1 ][ligne - 1] = " ";
+        this.mursV[colonne][colonne - 1] = " ";
     }
 
     /** Vérifie si un mur entrave le mouvement d'un joueur
@@ -390,6 +415,14 @@ public class Jeu {
         return false;
     }
 
+    /**
+     * Vérifie si le mouvement que veut effectuer le joueur est valide
+     *
+     * @param coordsPion
+     * @param typeMouvement
+     * @param coordsMvmt
+     * @return
+     */
     public boolean mouvementValide(int[] coordsPion, String typeMouvement, int[] coordsMvmt) {
         List<String> mvmtCorrects = Arrays.asList("G", "H", "D", "B");
 
