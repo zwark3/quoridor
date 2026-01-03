@@ -134,7 +134,7 @@ public class Affichage {
             do {
                 System.out.print(joueurActuel.nomJ + " (" + joueurActuel.couleurPion + joueurActuel.pion + "\u001B[0m) : bouger votre pion ou placer un mur (1 pour bouger, 2 pour mur) : ");
                 choix = sc.nextInt();
-            } while (choix < 1 || choix > 2);
+            } while (choix < 1 || choix > 2 || (choix == 2 && joueurActuel.nombreMurs == 0));
 
             // Choix correct
             sc.nextLine();
@@ -147,9 +147,9 @@ public class Affichage {
                 do {
                     System.out.print("Choissisez une direction (G -> GAUCHE, H -> HAUT, D -> DROITE, B -> BAS) : ");
                     mvmtPion = sc.nextLine().toUpperCase().trim();
-                    coordsMvmtSuivant = moteurJeu.coordsProchainMouvement(joueurActuel, mvmtPion);
+                    coordsMvmtSuivant = moteurJeu.coordsProchainMouvement(joueurActuel.coordsPion, mvmtPion);
 
-                } while (!moteurJeu.mouvementValide(joueurActuel, mvmtPion,coordsMvmtSuivant));
+                } while (!moteurJeu.mouvementValide(joueurActuel.coordsPion, mvmtPion,coordsMvmtSuivant));
 
                 // Le pion a été déplacé de manière correcte.
                 moteurJeu.bougerPion(joueurActuel, coordsMvmtSuivant);
@@ -158,30 +158,36 @@ public class Affichage {
 
             // L'utilisateur veut placer un mur
             else {
-                int typeMur, ligneMur, colonneMur;
-                do {
-                    System.out.print("Placez un mur (1 -> horizontal, 2 -> vertical) : ");
-                    typeMur = sc.nextInt();
-                } while (typeMur < 1 || typeMur > 2);
 
-                do {
-                    System.out.print("Écrivez le numéro de la ligne : ");
-                    ligneMur = sc.nextInt();
+                if (joueurActuel.nombreMurs == 0)
+                    System.out.println(joueurActuel.nomJ + ", vous n'avez plus de murs.");
 
-                    System.out.print("Écrivez le numéro de la colonne : ");
-                    colonneMur = sc.nextInt();
-                } while (!moteurJeu.murValide(listeJoueurs, typeMur, ligneMur, colonneMur));
+                else {
+                    int typeMur, ligneMur, colonneMur;
+                    do {
+                        System.out.print("Placez un mur (1 -> horizontal, 2 -> vertical) : ");
+                        typeMur = sc.nextInt();
+                    } while (typeMur < 1 || typeMur > 2);
 
-                // Le mur a été placé de manière correcte.
+                    do {
+                        System.out.print("Écrivez le numéro de la ligne : ");
+                        ligneMur = sc.nextInt();
 
-                if (typeMur == 1) {
-                    moteurJeu.placerMurHorizontal(ligneMur, colonneMur);
-                } else {
-                    moteurJeu.placerMurVertical(ligneMur, colonneMur);
+                        System.out.print("Écrivez le numéro de la colonne : ");
+                        colonneMur = sc.nextInt();
+                    } while (!moteurJeu.murValide(listeJoueurs, typeMur, ligneMur, colonneMur));
+
+                    // Le mur a été placé de manière correcte.
+
+                    if (typeMur == 1) {
+                        moteurJeu.placerMurHorizontal(ligneMur, colonneMur);
+                    } else {
+                        moteurJeu.placerMurVertical(ligneMur, colonneMur);
+                    }
+
+                    // On enlève un mur au joueur.
+                    joueurActuel.nombreMurs--;
                 }
-
-                // On enlève un mur au joueur.
-                joueurActuel.nombreMurs--;
             }
 
             tour++;
