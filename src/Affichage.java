@@ -7,7 +7,7 @@ public class Affichage {
     public static Scanner sc = new Scanner(System.in).useDelimiter("\n");
 
     public static void menuPresentation() {
-        int choixMenu;
+        int choixMenu, rejouer;
         String menuPresentation =
                """
                * * * * * * * * * * * * * * * * * * * *
@@ -26,11 +26,17 @@ public class Affichage {
             choixMenu = sc.nextInt();
         } while (choixMenu < 1 || choixMenu > 5);
 
+        boolean quitterJeu = false;
+
         // L'utilisateur a écrit une valeur correcte
-        while (choixMenu != 5) {
+        while (!quitterJeu) {
             switch (choixMenu) {
                 case 1:
-                    lancerJeu();
+                    do {
+                        lancerJeu();
+                        System.out.println("Voulez-vous rejouer ? (1 pour oui, 0 ou autre pour non) : ");
+                        rejouer = sc.nextInt();
+                    } while (rejouer == 1);
                     break;
                 case 2:
                     break;
@@ -74,10 +80,13 @@ public class Affichage {
                     System.out.println(information);
                     break;
                 case 5:
+                    quitterJeu = true;
                     break;
             }
-            System.out.println(menuPresentation);
-            choixMenu = sc.nextInt();
+            if (!quitterJeu) {
+                System.out.println(menuPresentation);
+                choixMenu = sc.nextInt();
+            }
         }
     }
 
@@ -98,13 +107,13 @@ public class Affichage {
         ArrayList<Joueur> listeJoueurs = moteurJeu.creerJoueurs(nombreJoueurs);
         moteurJeu.initialiserJeu(listeJoueurs);
 
-        indxJoueurActuel = -1;
         joueurActuel = null;
 
         int tour = 0;
 
         // Boucle de jeu
-        while (!moteurJeu.mancheFinie(listeJoueurs)) {
+        while (!moteurJeu.partieEstTerminee(listeJoueurs)) {
+
             // Détermination du joueur actuel
             indxJoueurActuel = tour % listeJoueurs.size();
             joueurActuel = listeJoueurs.get(indxJoueurActuel);
@@ -114,7 +123,6 @@ public class Affichage {
             // Information sur chaque joueur à chaque tour
             for (Joueur joueur : listeJoueurs) {
                 System.out.println(joueur.nomJ + " (" + joueur.pion + ") | murs restants : " + joueur.nombreMurs);
-                System.out.println(joueur.nomJ + " coordonnées possible : " + Arrays.deepToString(moteurJeu.coupsLegauxPion(joueur.coordsPion).toArray()));
             }
 
             System.out.println();
@@ -122,7 +130,6 @@ public class Affichage {
             // Affichage du tour et du joueur actuel
             System.out.println("Tour nº" + (tour + 1));
             System.out.println("Joueur actuel : " + joueurActuel.nomJ);
-            System.out.println("Chemin possible : " + moteurJeu.existeCheminVersFin(listeJoueurs));
 
             System.out.println();
 
@@ -153,50 +160,43 @@ public class Affichage {
 
                 // Le pion a été déplacé de manière correcte.
                 moteurJeu.bougerPion(joueurActuel, coordsMvmtSuivant);
-
             }
 
             // L'utilisateur veut placer un mur
             else {
+                int typeMur, ligneMur, colonneMur;
+                do {
+                    System.out.print("Placez un mur (1 -> horizontal, 2 -> vertical) : ");
+                    typeMur = sc.nextInt();
+                } while (typeMur < 1 || typeMur > 2);
 
-                if (joueurActuel.nombreMurs == 0)
-                    System.out.println(joueurActuel.nomJ + ", vous n'avez plus de murs.");
+                do {
+                    System.out.print("Écrivez le numéro de la ligne : ");
+                    ligneMur = sc.nextInt();
 
-                else {
-                    int typeMur, ligneMur, colonneMur;
-                    do {
-                        System.out.print("Placez un mur (1 -> horizontal, 2 -> vertical) : ");
-                        typeMur = sc.nextInt();
-                    } while (typeMur < 1 || typeMur > 2);
+                    System.out.print("Écrivez le numéro de la colonne : ");
+                    colonneMur = sc.nextInt();
+                } while (!moteurJeu.murValide(listeJoueurs, typeMur, ligneMur, colonneMur));
 
-                    do {
-                        System.out.print("Écrivez le numéro de la ligne : ");
-                        ligneMur = sc.nextInt();
+                // Le mur a été placé de manière correcte.
 
-                        System.out.print("Écrivez le numéro de la colonne : ");
-                        colonneMur = sc.nextInt();
-                    } while (!moteurJeu.murValide(listeJoueurs, typeMur, ligneMur, colonneMur));
-
-                    // Le mur a été placé de manière correcte.
-
-                    if (typeMur == 1) {
-                        moteurJeu.placerMurHorizontal(ligneMur, colonneMur);
-                    } else {
-                        moteurJeu.placerMurVertical(ligneMur, colonneMur);
-                    }
-
-                    // On enlève un mur au joueur.
-                    joueurActuel.nombreMurs--;
+                if (typeMur == 1) {
+                    moteurJeu.placerMurHorizontal(ligneMur, colonneMur);
+                } else {
+                    moteurJeu.placerMurVertical(ligneMur, colonneMur);
                 }
+
+                // On enlève un mur au joueur.
+                joueurActuel.nombreMurs--;
             }
 
             tour++;
         }
+
         // Fin de partie
         System.out.println(joueurActuel.nomJ + " a remporté la partie !");
         System.out.println("Nombre de coups total : " + (tour+1));
 
     }
-
 
 }

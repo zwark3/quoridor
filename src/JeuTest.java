@@ -25,7 +25,6 @@ class JeuTest {
         // Test valeurs hors plateau
         boolean murDepassePlateauHorizontal = jeu.murValide(joueurs, 1, 14, 9);
         assertFalse(murDepassePlateauHorizontal);
-
         boolean murDepassePlateauVertical = jeu.murValide(joueurs, 2, -1, 3);
         assertFalse(murDepassePlateauVertical);
 
@@ -75,6 +74,8 @@ class JeuTest {
         jeu.placerMurVertical(8, 4);
 
         boolean murCheminFinExiste = jeu.murValide(joueurs, 2, 8, 6);
+        jeu.retirerMurHorizontal(7, 5);
+        jeu.retirerMurVertical(8, 4);
         assertFalse(murCheminFinExiste);
 
     }

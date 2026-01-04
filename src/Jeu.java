@@ -97,6 +97,61 @@ public class Jeu {
     }
 
     /**
+     * Met en place un mur horizontal à l'emplacement indiqué.
+     *
+     * @param ligne le numéro de la ligne de séparation ; le mur horizontal sera situé entre cette ligne et la prochaine
+     *
+     * @param colonne le numéro de la colonne avec laquelle commence le mur horizontal
+     */
+    public void placerMurHorizontal(int ligne, int colonne) {
+        this.mursH[ligne - 1 ][colonne - 1] = "—";
+        this.mursH[ligne - 1][colonne] = "—";
+
+    }
+
+    /**
+     * Met en place un mur vertical à l'emplacement indiqué.
+     *
+     * @param ligne le numéro de la ligne avec laquelle commence le mur vertical
+     *
+     * @param colonne le numéro de la colonne de séparation ; le mur vertical sera situé entre cette ligne et la prochaine
+     *
+     */
+    public void placerMurVertical(int ligne, int colonne) {
+        this.mursV[ligne - 1][colonne - 1] = "|";
+        this.mursV[ligne][colonne - 1] = "|";
+    }
+
+    /**
+     * Enlève un mur horizontal à emplacement indiqué.
+     * Cette fonction n'est pas directement utilisée dans les interactions avec l'utilisateur : elle est utilisée pour la vérification de chemins
+     * valides et pour faciliter les jeux de test.
+     *
+     * @param ligne le numéro de la ligne de séparation ; le mur horizontal sera situé entre cette ligne et la prochaine
+     *
+     * @param colonne le numéro de la colonne avec laquelle commence le mur horizontal
+     */
+    public void retirerMurHorizontal(int ligne, int colonne) {
+        this.mursH[ligne - 1 ][colonne - 1] = " ";
+        this.mursH[ligne - 1][colonne] = " ";
+    }
+
+    /**
+     * Enlève un mur vertical à emplacement indiqué.
+     * Cette fonction n'est pas directement utilisée dans les interactions avec l'utilisateur : elle est utilisée pour la vérification de chemins
+     * valides et pour faciliter les jeux de test.
+     *
+     * @param ligne le numéro de la ligne avec laquelle commence le mur vertical
+     *
+     * @param colonne le numéro de la colonne de séparation ; le mur vertical sera situé entre cette ligne et la prochaine
+     */
+
+    public void retirerMurVertical(int ligne, int colonne) {
+        this.mursV[ligne - 1 ][colonne - 1] = " ";
+        this.mursV[ligne][colonne - 1] = " ";
+    }
+
+    /**
      * Vérifie si un mur choisi par l'utilisateur est posable.
      *
      * @param listeJoueurs la liste des joueurs
@@ -119,36 +174,51 @@ public class Jeu {
             return false;
         }
 
+        // Si le type de mur est horizontal
         if (typeMur == 1) {
 
+            // On regarde si un mur a déjà été placée à cet endroit.
             if (!this.mursH[ligneUtil - 1][colonneUtil - 1].equals(" ")) {
                 System.out.println("Erreur : un mur horizontal est déjà présent ! ");
                 return false;
             }
 
+            // ligneUtil - 2 peut lancer un IndexOutOfBoundsException. Il faut donc séparer le cas où la ligne est supérieure à 1.
             if (ligneUtil > 1) {
+                /* Intersection avec un mur vertical : on regarde s'il y a un mur vertical à cette case. Un mur vertical prennant deux lignes,
+                on regarde si la case (ligne) avant ne contient pas de mur vertical (dûe à la représentation). */
                 if (!this.mursV[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursV[ligneUtil - 2][colonneUtil - 1].equals(" ")) {
                     System.out.println("Erreur : intersection avec un mur vertical !");
                     return false;
                 }
             }
             else {
+                /* Intersection avec un mur vertical. Seulement, dans ce cas, on regarde uniquement s'il y a un mur vertical à la case où on veut poser
+                le mur horizontal. */
                 if (!this.mursV[ligneUtil - 1][colonneUtil - 1].equals(" ")) {
                     System.out.println("Erreur : intersection avec un mur vertical !");
                     return false;
                 }
             }
 
+            /* Aucune intersection ne s'est passé. Il faut quand même regarder si le mur empêche un joueur d'arriver à la fin.
+            Pour ce faire, on place un mur horizontal "temporaire" le temps du test. */
             placerMurHorizontal(ligneUtil, colonneUtil);
 
-        } else {
+        }
+        // Si le type de mur est vertical
+        else {
 
+            // On regarde si un mur vertical a déjà été placée à cet emplacement.
             if (!this.mursV[ligneUtil - 1][colonneUtil - 1].equals(" ")) {
                 System.out.println("Erreur : un mur vertical est déjà présent ! ");
                 return false;
             }
 
+            /* colonneUtil - 2 peut engendrer un IndexOutOfBounds. Il faut donc séparer le cas dans lequel le mur est à l'extrémité du plateau */
             if (colonneUtil > 1) {
+                /* Intersection avec un mur horizontal : on regarde s'il y a un mur horizontal à cette case. Un mur vertical prennant deux colonnes,
+                on regarde si la case (colonne) avant ne contient pas de mur horizontal (dûe à la représentation). */
                 if (!this.mursH[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursH[ligneUtil - 1][colonneUtil - 2].equals(" ")) {
                     System.out.println("Erreur : intersection avec un mur horizontal ! !");
                     return false;
@@ -156,23 +226,26 @@ public class Jeu {
             }
 
             else {
+                /* Intersection avec un mur horizontal. Dans ce cas, on regarde uniquement s'il y a un mur horizontal à la case où on veut poser
+                le mur vertical. */
                 if (!this.mursH[ligneUtil - 1][colonneUtil - 1].equals(" ")) {
                     System.out.println("Erreur : intersection avec un mur horizontal !");
                     return false;
                 }
             }
 
+            /* Aucune intersection. Il faut quand même regarder si le mur empêche un joueur d'arriver à la fin.
+            Pour ce faire, on place un mur vertical "temporaire" le temps du test. */
             placerMurVertical(ligneUtil, colonneUtil);
         }
 
         cheminValide = existeCheminVersFin(listeJoueurs);
 
-        if (typeMur == 1) {
+        // On retire le mur peu importe si un chemin est valide ou non, étant donné que la variable cheminValide a déjà été affectée.
+        if (typeMur == 1)
             retirerMurHorizontal(ligneUtil, colonneUtil);
-        }
-        else {
+        else
             retirerMurVertical(ligneUtil, colonneUtil);
-        }
 
         if (!cheminValide) {
             System.out.println("Erreur : ce mur bloque un joueur !");
@@ -180,42 +253,6 @@ public class Jeu {
         }
 
         return true;
-    }
-
-    /**
-     * Met en place un mur horizontal à l'emplacement indiqué.
-     *
-     * @param ligne le numéro de la ligne de séparation ; le mur horizontal sera situé entre cette ligne et la prochaine
-     *
-     * @param colonne le numéro de la colonne avec laquelle commence le mur horizontal
-     */
-    public void placerMurHorizontal(int ligne, int colonne) {
-        this.mursH[ligne - 1 ][colonne - 1] = "—";
-        this.mursH[ligne - 1][colonne] = "—";
-
-    }
-
-    public void retirerMurHorizontal(int ligne, int colonne) {
-        this.mursH[ligne - 1 ][colonne - 1] = " ";
-        this.mursH[ligne - 1][colonne] = " ";
-    }
-
-    /**
-     * Met en place un mur vertical à l'emplacement indiqué.
-     *
-     * @param ligne le numéro de la ligne avec laquelle commence le mur vertical
-     *
-     * @param colonne le numéro de la colonne de séparation ; le mur vertical sera situé entre cette ligne et la prochaine
-     *
-     */
-    public void placerMurVertical(int ligne, int colonne) {
-        this.mursV[ligne - 1][colonne - 1] = "|";
-        this.mursV[ligne][colonne - 1] = "|";
-    }
-
-    public void retirerMurVertical(int ligne, int colonne) {
-        this.mursV[ligne - 1 ][ligne - 1] = " ";
-        this.mursV[colonne][colonne - 1] = " ";
     }
 
     /** Vérifie si un mur entrave le mouvement d'un joueur
@@ -418,10 +455,13 @@ public class Jeu {
     /**
      * Vérifie si le mouvement que veut effectuer le joueur est valide
      *
-     * @param coordsPion
-     * @param typeMouvement
-     * @param coordsMvmt
-     * @return
+     * @param coordsPion un tableau avec les coordonnées actuelles du pion
+     *
+     * @param typeMouvement le type de mouvement que le joueur effectue (G → Gauche, H → Haut, D → Droit, B → Bas)
+     *
+     * @param coordsMvmt un tableau contenant les coordinates du mouvement à effectuer.
+     *
+     * @return vrai (true) si le mouvement est possible, faux (false) sinon.
      */
     public boolean mouvementValide(int[] coordsPion, String typeMouvement, int[] coordsMvmt) {
         List<String> mvmtCorrects = Arrays.asList("G", "H", "D", "B");
@@ -442,9 +482,7 @@ public class Jeu {
             return false;
         }
         // Le mouvement est valide.
-        else {
-            return true;
-        }
+        return true;
     }
 
     /**
@@ -518,12 +556,12 @@ public class Jeu {
      *
      * @return vrai (true) si un joueur a atteint sa case gagnante, faux (false) sinon.
      */
-    public boolean mancheFinie(ArrayList<Joueur> joueurs) {
+    public boolean partieEstTerminee(ArrayList<Joueur> joueurs) {
         if (joueurs.get(0).coordsPion[0] == TAILLE_PLATEAU - 1 || joueurs.get(1).coordsPion[0] == 0)
                 return true;
 
          if (joueurs.size() == 4)
-             return joueurs.get(2).coordsPion[0] == 8 || joueurs.get(3).coordsPion[0] == 0;
+             return joueurs.get(2).coordsPion[0] == TAILLE_PLATEAU - 1 || joueurs.get(3).coordsPion[0] == 0;
 
         return false;
     }
