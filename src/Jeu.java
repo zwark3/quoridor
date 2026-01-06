@@ -2,8 +2,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * La classe Jeu détient toutes les méthodes en rapport avec la logique et la structure du jeu.
+ */
 public class Jeu {
     public static final int TAILLE_PLATEAU = 9;
+
+    // Couleur des pions
+    public static final String COULEUR_ROUGE = "\u001B[31m";
+    public static final String COULEUR_BLEU = "\u001B[34m";
+    public static final String COULEUR_VERT = "\u001B[32m";
+    public static final String COULEUR_JAUNE = "\u001B[93m";
+    public static final String COULEUR_RESET = "\u001B[0m";
 
     String[][] plateau;
     String[][] mursH;
@@ -19,16 +29,19 @@ public class Jeu {
     public ArrayList<Joueur> creerJoueurs(int nombreJoueurs) {
         ArrayList<Joueur> listeJoueurs = new ArrayList<>();
 
-        listeJoueurs.add(new Joueur("J1", "R", "\u001B[31m", new int[]{0, 4}, 10));
-        listeJoueurs.add(new Joueur("J2", "B", "\u001B[34m", new int[]{8, 4}, 10));
+        // Toujours présent peu importe le nombre de joueurs.
+
+        listeJoueurs.add(new Joueur("J1", "R", COULEUR_ROUGE, new int[]{0, 4}));
+        listeJoueurs.add(new Joueur("J2", "B", COULEUR_BLEU, new int[]{8, 4}));
 
         if (nombreJoueurs == 4) {
-            listeJoueurs.add(new Joueur("J3", "V", "\u001B[32m", new int[]{4, 0}, 10));
-            listeJoueurs.add(new Joueur("J4", "J", "\u001B[93m", new int[]{4, 8}, 10));
-            // Change le nombre de murs
-            for (Joueur joueur : listeJoueurs) {
-                joueur.nombreMurs = 5;
-            }
+            listeJoueurs.add(new Joueur("J3", "V", COULEUR_VERT, new int[]{4, 0}));
+            listeJoueurs.add(new Joueur("J4", "J", COULEUR_JAUNE, new int[]{4, 8}));
+        }
+
+        // On change le nombre de murs
+        for (Joueur joueur : listeJoueurs) {
+            joueur.nombreMurs = joueur.nombreMurs / nombreJoueurs;
         }
 
         return listeJoueurs;
@@ -41,8 +54,8 @@ public class Jeu {
      */
     public void initialiserJeu(ArrayList<Joueur> tabJoueurs) {
 
-        for (String[] elePlateau : this.plateau) {
-            Arrays.fill(elePlateau, ".");
+        for (String[] plateauJeu : this.plateau) {
+            Arrays.fill(plateauJeu, ".");
         }
 
         for (String[] murHoriz : this.mursH) {
@@ -55,7 +68,9 @@ public class Jeu {
 
         // Met en place les différents pions sur le plateau de jeu
         for (Joueur joueur : tabJoueurs) {
-            this.plateau[joueur.coordsPion[0]][joueur.coordsPion[1]] = joueur.pion;
+            int ligneJoueur = joueur.coordsPion[0];
+            int colonneJoueur = joueur.coordsPion[1];
+            this.plateau[ligneJoueur][colonneJoueur] = joueur.pion;
         }
     }
 
@@ -71,13 +86,13 @@ public class Jeu {
                 if (!this.plateau[ligne][colonne].equals(".")) {
                     for (Joueur tabJoueur : tabJoueurs)
                         if (tabJoueur.pion.equals(this.plateau[ligne][colonne]))
-                            System.out.print(tabJoueur.couleurPion + tabJoueur.pion + "\u001B[0m \t");
+                            System.out.print(tabJoueur.couleurPion + tabJoueur.pion + COULEUR_RESET + "\t");
                 }
                 else {
                     System.out.print(this.plateau[ligne][colonne] + "\t");
                 }
 
-                /* Affiche les murs verticaux */
+                // Affiche les murs verticaux selon l'ordre (case puis mur vertical)
                 if (colonne < 8) {
                     System.out.print(this.mursV[ligne][colonne] + "\t");
                 }
@@ -85,10 +100,11 @@ public class Jeu {
 
             System.out.println();
 
+            // Affiche les murs horizontaux selon l'ordre (toutes les cases, puis affichage d'un mur horizontal)
             if (ligne < 8) {
-                for (int colonneMurH = 0; colonneMurH < this.mursH[ligne].length; colonneMurH++) {
+                for (int colonneMurH = 0; colonneMurH < this.mursH[ligne].length; colonneMurH++)
                     System.out.print(this.mursH[ligne][colonneMurH] + "\t\t");
-                }
+
             }
 
             System.out.println();
@@ -152,22 +168,25 @@ public class Jeu {
 
     /**
      * Vérifie si un mur choisi par l'utilisateur est posable.
+     * Règles concernant les murs :
+     * 1. Un mur ne peut pas être superposé sur un autre mur.
+     * 2. Les murs ne peuvent pas s'entrecouper.
      *
      * @param listeJoueurs la liste des joueurs
      *
-     * @param typeMur le type de mur que l'utilisateur veut poser (horizontal ou vertical)
+     * @param typeMur le type de mur que l'utilisateur veut poser (horizontal ou vertical).
      *
      * @param ligneUtil la ligne du mur que l'utilisateur veut poser.
      *
      * @param colonneUtil la colonne du mur que l'utilisateur veut poser
      *
-     * @return vrai (vrai) si le mur peut être posé, faux (false) sinon
+     * @return vrai (true) si le mur peut être posé, faux (false) sinon
      */
     public boolean murValide(ArrayList<Joueur> listeJoueurs, int typeMur, int ligneUtil, int colonneUtil) {
 
         boolean cheminValide;
 
-        // Le pion se retrouvera en dehors du plateau.
+        // Cas où les coordonnées du mur sont invalides.
         if (ligneUtil <= 0 || ligneUtil > TAILLE_PLATEAU - 1 || colonneUtil <= 0 || colonneUtil > TAILLE_PLATEAU - 1) {
             System.out.println("Erreur : valeurs hors du plateau !");
             return false;
@@ -184,7 +203,7 @@ public class Jeu {
 
             // ligneUtil - 2 peut lancer un IndexOutOfBoundsException. Il faut donc séparer le cas où la ligne est supérieure à 1.
             if (ligneUtil > 1) {
-                /* Intersection avec un mur vertical : on regarde s'il y a un mur vertical à cette case. Un mur vertical prennant deux lignes,
+                /* Intersection avec un mur vertical : on regarde s'il y a un mur vertical à cette case. Un mur vertical prenant deux lignes,
                 on regarde si la case (ligne) avant ne contient pas de mur vertical (dûe à la représentation). */
                 if (!this.mursV[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursV[ligneUtil - 2][colonneUtil - 1].equals(" ")) {
                     System.out.println("Erreur : intersection avec un mur vertical !");
@@ -216,7 +235,7 @@ public class Jeu {
 
             /* colonneUtil - 2 peut engendrer un IndexOutOfBounds. Il faut donc séparer le cas dans lequel le mur est à l'extrémité du plateau */
             if (colonneUtil > 1) {
-                /* Intersection avec un mur horizontal : on regarde s'il y a un mur horizontal à cette case. Un mur vertical prennant deux colonnes,
+                /* Intersection avec un mur horizontal : on regarde s'il y a un mur horizontal à cette case. Un mur vertical prenant deux colonnes,
                 on regarde si la case (colonne) avant ne contient pas de mur horizontal (dûe à la représentation). */
                 if (!this.mursH[ligneUtil - 1][colonneUtil - 1].equals(" ") && this.mursH[ligneUtil - 1][colonneUtil - 2].equals(" ")) {
                     System.out.println("Erreur : intersection avec un mur horizontal ! !");
@@ -299,33 +318,51 @@ public class Jeu {
      *
      * @return les coups légaux que peut effectuer le pion.
      */
-    public ArrayList<int[]> coupsLegauxPion(int[] coordsPion) {
+    public ArrayList<int[]> determineCoupsLegauxPion(int[] coordsPion) {
         ArrayList<int[]> coupsAutorisesPion = new ArrayList<>();
 
-        int[][] directionsPossibles = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
-        int deplacementVertical, deplacementHorizontal;
+        int[][] directionsPossibles = {
+                {0, -1},   // GAUCHE (recule d'une colonne)
+                {-1, 0},  // HAUT (recule d'une ligne).
+                {0, 1},  // DROIT (avance d'une colonne)
+                {1, 0}  // BAS (avance d'une ligne)
+        };
 
+        int offsetVertical, offsetHorizontal;
+
+        // On boucle sur chaque direction possible
         for (int[] direction : directionsPossibles) {
+            int ligne, colonne;
+
+            // coordsCoupLegal = coordsPion ne marcherait pas, car tableaux auraient la même adresse
+            // coordsCoupLegal = {coordsPion[0], coordsPion[1] marche aussi}
             int[] coordsCoupLegal = Arrays.copyOf(coordsPion, coordsPion.length);
 
-            deplacementVertical = direction[0];
-            deplacementHorizontal = direction[1];
+            offsetVertical = direction[0];
+            offsetHorizontal = direction[1];
 
-            coordsCoupLegal[0] += deplacementVertical;
-            coordsCoupLegal[1] += deplacementHorizontal;
+            ligne = coordsCoupLegal[0];
+            colonne = coordsCoupLegal[1];
 
-            if ((coordsCoupLegal[0] > -1 && coordsCoupLegal[0] < TAILLE_PLATEAU
-                    && coordsCoupLegal[1] > -1 && coordsCoupLegal[1] < TAILLE_PLATEAU)
-                    && !murBloqueMouvement(coordsPion, coordsCoupLegal)) {
+            ligne += offsetVertical;
+            colonne += offsetHorizontal;
 
-                if (!this.plateau[coordsCoupLegal[0]][coordsCoupLegal[1]].equals(".")) {
-                    int[] saut = {coordsCoupLegal[0] + deplacementVertical, coordsCoupLegal[1] + deplacementHorizontal};
+            // Vérifie si le pion sort du plateau.
+            if ((ligne > -1 && ligne < TAILLE_PLATEAU && colonne > -1 && colonne < TAILLE_PLATEAU) &&
+                    !murBloqueMouvement(coordsPion, coordsCoupLegal)) {
 
+                // On regarde s'il y a pion ennemi là où le pion du joueur est censé se poser.
+                if (!this.plateau[ligne][colonne].equals(".")) {
+                    // Le saut arrive à la case adjacente à celle du pion ennemi. Autrement dit, un décalage de 1.
+                    int[] saut = {ligne + offsetVertical, colonne + offsetHorizontal};
+
+                    // Vérifie si le saut est en dehors du plateau.
                     if (saut[0] > -1 && saut[0] < TAILLE_PLATEAU && saut[1] > -1 && saut[1] < TAILLE_PLATEAU) {
-                        if (!murBloqueMouvement(coordsCoupLegal, saut))
+                        if (!murBloqueMouvement(coordsCoupLegal, saut) && !this.plateau[saut[0]][saut[0]].equals("."))
                             coupsAutorisesPion.add(saut);
                     }
                 }
+                // Pas de saut → on ajoute juste le mouvement légal.
                 else
                     coupsAutorisesPion.add(coordsCoupLegal);
             }
@@ -335,9 +372,9 @@ public class Jeu {
     }
 
     /**
-     * Retourne les coordonnées du mouvement que le joueur veut effectuer.
+     * Filtre les coups légaux que peut effectuer le pion en fonction de la direction donnée par le joueur.
      *
-     * @param typeMouvement le type de mouvement (G -> Gauche, H -> Haut, D -> Droit, B -> Bas)
+     * @param typeMouvement le type de mouvement (G → Gauche, H → Haut, D → Droit, B → Bas)
      *
      * @param coordsPion les coordonnées du pion
      *
@@ -345,7 +382,7 @@ public class Jeu {
      *
      * @return une liste avec les coordonnées du nouveau mouvement.
      */
-    public ArrayList<int[]> obtenirCoupsDansDirection(String typeMouvement, int[] coordsPion, ArrayList<int[]> coupsAutorises) {
+    public ArrayList<int[]> filtrerCoupsParDirection(String typeMouvement, int[] coordsPion, ArrayList<int[]> coupsAutorises) {
         ArrayList<int[]> candidats = new ArrayList<>();
 
         for (int[] coups : coupsAutorises) {
@@ -387,15 +424,19 @@ public class Jeu {
         // On doit vérifier pour chaque joueur s'ils peuvent arriver à leur but.
         for (Joueur joueur : listeJoueurs) {
 
+            // Le mur qui servira à marquer les cases comme "visitées".
             mursVisites  = new boolean[9][9];
+
             for (boolean[] lignesMursVisites : mursVisites) {
                 Arrays.fill(lignesMursVisites, false);
             }
 
             int rangJoueur = listeJoueurs.indexOf(joueur);
+
             ligneGagnante = -1;
             colonneGagnante = -1;
 
+            // On détermine pour chaque joueur la ligne / colonne qui lui permet de gagner.
             switch (rangJoueur) {
                 case 0:
                     ligneGagnante = TAILLE_PLATEAU - 1;
@@ -423,10 +464,10 @@ public class Jeu {
      * Regarde récursivement si un chemin existe pour atteindre la fin.
      * Cette fonction va d'abord commencer en prenant les coordonnées actuelles du joueur et regarder les coups légaux. Pour chaque coup légal, elle
      * regarde si elle y est déjà allé grâce au tableau de mursVisites. Si la case n'a jamais été explorée, alors on la marque comme visitée. Si elle
-     * a déjà été visitée, alors on l'ignore. Puis on recommence ce processus. La fonction s'arrête lorsqu'une des cases visitées correspond à la
+     * a déjà été visitée, alors elle l'ignore. Puis, on recommence ce processus. La fonction s'arrête lorsqu'une des cases visitées correspond à la
      * condition de victoire du pion ou que toutes les cases ont été visitées sans jamais atteindre la victoire.
      *
-     * @param coords les coordonnées actuelles du joueur
+     * @param coords des coordonnées (du joueur au premier tour, des coups légaux lors des récursions)
      *
      * @param murCasesVisites les différentes cases qui vont être marquées visitées.
      *
@@ -437,16 +478,30 @@ public class Jeu {
      * @return vrai (true) s'il existe au moins un chemin, faux (false) sinon.
      */
     public boolean rechercheChemin(int[] coords, boolean[][] murCasesVisites, int ligneG, int colonneG) {
-        ArrayList<int[]> listeCoupsAutorises = coupsLegauxPion(coords);
+        ArrayList<int[]> listeCoupsAutorises = determineCoupsLegauxPion(coords);
 
+        // On marque visitée la case dans laquelle le joueur se situe.
+        murCasesVisites[coords[0]][coords[1]] = true;
+
+        // On boucle sur la liste des mouvements légaux du pion.
         for (int[] tabCoupLegal : listeCoupsAutorises) {
+            boolean caseDejaVisitee;
+            int ligneCoupLegal, colonneCoupLegal;
 
-            if (!murCasesVisites[tabCoupLegal[0]][tabCoupLegal[1]]) {
+            ligneCoupLegal = tabCoupLegal[0];
+            colonneCoupLegal = tabCoupLegal[1];
+
+            caseDejaVisitee = murCasesVisites[ligneCoupLegal][colonneCoupLegal];
+
+            if (!caseDejaVisitee) {
+                // Si on a atteint la ligne / colonne pour remporter la partie
                 if (ligneG != -1 && tabCoupLegal[0] == ligneG || colonneG != -1 && tabCoupLegal[1] == colonneG)
                     return true;
 
-                murCasesVisites[tabCoupLegal[0]][tabCoupLegal[1]] = true;
+                // On marque la case comme visitée.
+                murCasesVisites[ligneCoupLegal][colonneCoupLegal] = true;
 
+                // On rappelle la fonction, cette fois-ci avec comme coords tabCoupLegal (les coups légaux prochains).
                 if (rechercheChemin(tabCoupLegal, murCasesVisites, ligneG, colonneG)) {
                     return true;
                 }
@@ -478,29 +533,49 @@ public class Jeu {
      *
      * @param joueur l'objet joueur
      *
-     * @param coordsProchainMvmt les coordonnées du mouvement où le pion doit aller
+     * @param coordsDest les coordonnées dans lesquelles le joueur va se retrouver après mouvement.
      */
-    public void bougerPion(Joueur joueur, int[] coordsProchainMvmt) {
-        this.plateau[coordsProchainMvmt[0]][coordsProchainMvmt[1]] = joueur.pion;
+    public void bougerPion(Joueur joueur, int[] coordsDest) {
+        int ligneDestination = coordsDest[0];
+        int colonneDestination = coordsDest[1];
+
+        this.plateau[ligneDestination][colonneDestination] = joueur.pion;
         this.plateau[joueur.coordsPion[0]][joueur.coordsPion[1]] = ".";
 
-        joueur.coordsPion[0] = coordsProchainMvmt[0];
-        joueur.coordsPion[1] = coordsProchainMvmt[1];
+        // Modifie les coordonnées de joueur pour correspondre aux nouvelles coordonnées.
+        joueur.coordsPion[0] = ligneDestination;
+        joueur.coordsPion[1] = colonneDestination;
     }
 
     /**
-     * Regarde si un des joueurs a gagné.
+     * Vérifie si la partie en cours est conclue.
      *
      * @param joueurs la liste des joueurs
-     *
-     * @return vrai (true) si un joueur a atteint sa case gagnante, faux (false) sinon.
+     * @return vrai (true) si la partie s'est terminée, faux (false) sinon.
      */
-    public boolean partieEstTerminee(ArrayList<Joueur> joueurs) {
-        if (joueurs.get(0).coordsPion[0] == TAILLE_PLATEAU - 1 || joueurs.get(1).coordsPion[0] == 0)
-                return true;
+    public boolean partieTerminee(ArrayList<Joueur> joueurs) {
+        if (joueurs.getFirst().coordsPion[0] == TAILLE_PLATEAU - 1) {
+            System.out.println(joueurs.getFirst().nomJ + "a gagné ! ");
+            return true;
+        }
 
-         if (joueurs.size() == 4)
-             return joueurs.get(2).coordsPion[0] == TAILLE_PLATEAU - 1 || joueurs.get(3).coordsPion[0] == 0;
+        if (joueurs.get(1).coordsPion[0] == 0) {
+            System.out.println(joueurs.get(1).nomJ + "a gagné ! ");
+            return true;
+        }
+
+        if (joueurs.size() == 4) {
+
+            if (joueurs.get(2).coordsPion[1] == TAILLE_PLATEAU - 1) {
+                System.out.println(joueurs.get(2).nomJ + "a gagné ! ");
+                return true;
+            }
+
+            if (joueurs.get(3).coordsPion[1] == 0) {
+                System.out.println(joueurs.get(3).nomJ + "a gagné ! ");
+                return true;
+            }
+        }
 
         return false;
     }

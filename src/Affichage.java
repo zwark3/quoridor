@@ -2,6 +2,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+/**
+ * La classe Affichage s'occupe des interactions avec l'utilisateur et de l'affichage du jeu et de son déroulé,
+ * et est chargé d'appliquer les méthodes prédéfinies dans les deux autres classes.
+ *
+ */
 public class Affichage {
 
     public static Scanner sc = new Scanner(System.in).useDelimiter("\n");
@@ -42,7 +47,7 @@ public class Affichage {
                     break;
                 case 3:
                     String reglesPresentation =
-                            """
+                                    """
                                     REGLES DU JEU DU QUORIDOR
                                     
                                     PRESENTATION
@@ -56,8 +61,8 @@ public class Affichage {
                                     MOUVEMENT DES PIONS
                                     
                                     Les pions bougent une case à la fois, horizontalement, verticalement, devant ou derrière.
-                                    Les pions doivent esquiver les murs. Quand deux pions sont face à face et qu'aucun mur 
-                                    ne les bloque, le joueur actuel peut sauter par-dessus le pion ennemi. 
+                                    Les pions doivent esquiver les murs. Quand deux pions sont face à face et qu'aucun mur
+                                    ne les bloque, le joueur actuel peut sauter par-dessus le pion ennemi.
                                     
                                     POSITIONNEMENT DES MURS
                                     Les murs sont des élements plats de deux cases de large placées entre deux groupes de deux
@@ -88,6 +93,8 @@ public class Affichage {
                 choixMenu = sc.nextInt();
             }
         }
+
+        System.out.println("Au revoir ! ");
     }
 
     private static void lancerJeu() {
@@ -103,27 +110,32 @@ public class Affichage {
         int indxJoueurActuel;
         Joueur joueurActuel;
 
-        Jeu moteurJeu = new Jeu();
-        ArrayList<Joueur> listeJoueurs = moteurJeu.creerJoueurs(nombreJoueurs);
-        moteurJeu.initialiserJeu(listeJoueurs);
+        int choix;
+        boolean joueurPossedeMurs;
 
-        joueurActuel = null;
+        Jeu moteurJeu = new Jeu();
+
+        ArrayList<Joueur> listeJoueurs = moteurJeu.creerJoueurs(nombreJoueurs);
+
+        moteurJeu.initialiserJeu(listeJoueurs);
 
         int tour = 0;
 
         // Boucle de jeu
-        while (!moteurJeu.partieEstTerminee(listeJoueurs)) {
+        while (!moteurJeu.partieTerminee(listeJoueurs)) {
 
             // Détermination du joueur actuel
             indxJoueurActuel = tour % listeJoueurs.size();
             joueurActuel = listeJoueurs.get(indxJoueurActuel);
+
+            joueurPossedeMurs = (joueurActuel.nombreMurs > 0);
 
             System.out.println();
 
             // Information sur chaque joueur à chaque tour
             for (Joueur joueur : listeJoueurs) {
                 System.out.println(joueur.nomJ + " (" + joueur.pion + ") | murs restants : " + joueur.nombreMurs);
-                System.out.println(joueur.nomJ + " coordonnées possible : " + Arrays.deepToString(moteurJeu.coupsLegauxPion(joueur.coordsPion).toArray()));
+                System.out.println(joueur.nomJ + " coordonnées possible : " + Arrays.deepToString(moteurJeu.determineCoupsLegauxPion(joueur.coordsPion).toArray()));
             }
 
             System.out.println();
@@ -138,11 +150,12 @@ public class Affichage {
 
             System.out.println();
 
-            int choix;
             do {
                 System.out.print(joueurActuel.nomJ + " (" + joueurActuel.couleurPion + joueurActuel.pion + "\u001B[0m) : bouger votre pion ou placer un mur (1 pour bouger, 2 pour mur) : ");
                 choix = sc.nextInt();
-            } while (choix < 1 || choix > 2 || (choix == 2 && joueurActuel.nombreMurs == 0));
+                if (choix == 2 && !joueurPossedeMurs)
+                    System.out.println(joueurActuel.nomJ + " vous n'avez plus de murs ! ");
+            } while ((choix < 1 || choix > 2) || choix == 2 && !joueurPossedeMurs);
 
             // Choix correct
             sc.nextLine();
@@ -151,13 +164,13 @@ public class Affichage {
             if (choix == 1) {
                 String mvmtPion;
 
-                ArrayList<int[]> coupsLegaux = moteurJeu.coupsLegauxPion(joueurActuel.coordsPion);
+                ArrayList<int[]> coupsLegaux = moteurJeu.determineCoupsLegauxPion(joueurActuel.coordsPion);
                 ArrayList<int[]> candidats;
 
                 do {
                     System.out.print("Choissisez une direction (G -> GAUCHE, H -> HAUT, D -> DROITE, B -> BAS) : ");
                     mvmtPion = sc.nextLine().toUpperCase().trim();
-                    candidats = moteurJeu.obtenirCoupsDansDirection(mvmtPion, joueurActuel.coordsPion, coupsLegaux);
+                    candidats = moteurJeu.filtrerCoupsParDirection(mvmtPion, joueurActuel.coordsPion, coupsLegaux);
                 } while (!moteurJeu.mouvementValide(mvmtPion, candidats));
 
                 moteurJeu.bougerPion(joueurActuel, candidats.getFirst());
@@ -195,8 +208,7 @@ public class Affichage {
         }
 
         // Fin de partie
-        System.out.print(joueurActuel.nomJ + " a remporté la partie !");
-        System.out.println("Nombre de coups total : " + (tour+1));
+        System.out.println("Nombre de coups total : " + (tour + 1));
 
     }
 
