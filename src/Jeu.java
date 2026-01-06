@@ -80,6 +80,14 @@ public class Jeu {
      * @param tabJoueurs la liste des joueurs.
      */
     public void afficherPlateauJeu(ArrayList<Joueur> tabJoueurs) {
+
+        // Affiche les différentes lettres
+        for (char lettreColonne = 'A'; lettreColonne < 'J'; lettreColonne++)
+            System.out.print(lettreColonne + "\t\t");
+
+        System.out.println();
+        System.out.println();
+
         for (int ligne = 0; ligne < this.plateau.length; ligne++) {
             for (int colonne = 0; colonne < this.plateau[ligne].length; colonne++) {
 
@@ -98,6 +106,7 @@ public class Jeu {
                 }
             }
 
+            System.out.println("\t" + (ligne + 1));
             System.out.println();
 
             // Affiche les murs horizontaux selon l'ordre (toutes les cases, puis affichage d'un mur horizontal)
