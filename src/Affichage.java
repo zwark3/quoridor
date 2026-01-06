@@ -17,11 +17,11 @@ public class Affichage {
                 """
                 * * * * * * * * * * * * * * * * * * * *
                 *   BIENVENUE SUR LE JEU DU QUORIDOR  *
+                *                                     *
                 * 1. Joueur contre joueur             *
-                * 2. Joueur contre robot              *
-                * 3. Règles du jeu                    *
-                * 4. Informations                     *
-                * 5. Quitter                          *
+                * 2. Règles du jeu                    *
+                * 3. Informations                     *
+                * 4. Quitter                          *
                 *                                     *
                 *           Faites un choix.          *
                 * * * * * * * * * * * * * * * * * * * *
@@ -39,13 +39,11 @@ public class Affichage {
                 case 1:
                     do {
                         lancerJeu();
-                        System.out.println("Voulez-vous rejouer ? (1 pour oui, 0 ou autre pour non) : ");
+                        System.out.print("Voulez-vous rejouer ? (1 pour oui, 0 ou autre pour non) : ");
                         rejouer = sc.nextInt();
                     } while (rejouer == 1);
                     break;
                 case 2:
-                    break;
-                case 3:
                     String reglesPresentation =
                                     """
                                     REGLES DU JEU DU QUORIDOR
@@ -76,7 +74,7 @@ public class Affichage {
                                     """;
                     System.out.println(reglesPresentation);
                     break;
-                case 4:
+                case 3:
                     String information = """
                             Jeu du Quoridor. Fait par Mirko Marchesi.
                             Projet de  Cheema Mohammad et Pansan Abdel-Malik
@@ -84,7 +82,7 @@ public class Affichage {
                             """;
                     System.out.println(information);
                     break;
-                case 5:
+                case 4:
                     quitterJeu = true;
                     break;
             }

@@ -363,7 +363,7 @@ public class Jeu {
 
                     // Vérifie si le saut est en dehors du plateau.
                     if (saut[0] > -1 && saut[0] < TAILLE_PLATEAU && saut[1] > -1 && saut[1] < TAILLE_PLATEAU) {
-                        if (!murBloqueMouvement(coordsCoupLegal, saut) && !this.plateau[saut[0]][saut[1]].equals("."))
+                        if (!murBloqueMouvement(coordsCoupLegal, saut) && this.plateau[saut[0]][saut[1]].equals("."))
                             coupsAutorisesPion.add(saut);
                     }
                 }
@@ -560,24 +560,24 @@ public class Jeu {
      */
     public boolean partieTerminee(ArrayList<Joueur> joueurs) {
         if (joueurs.getFirst().coordsPion[0] == TAILLE_PLATEAU - 1) {
-            System.out.println(joueurs.getFirst().nomJ + "a gagné ! ");
+            System.out.println(joueurs.getFirst().nomJ + " a gagné ! ");
             return true;
         }
 
         if (joueurs.get(1).coordsPion[0] == 0) {
-            System.out.println(joueurs.get(1).nomJ + "a gagné ! ");
+            System.out.println(joueurs.get(1).nomJ + " a gagné ! ");
             return true;
         }
 
         if (joueurs.size() == 4) {
 
             if (joueurs.get(2).coordsPion[1] == TAILLE_PLATEAU - 1) {
-                System.out.println(joueurs.get(2).nomJ + "a gagné ! ");
+                System.out.println(joueurs.get(2).nomJ + " a gagné ! ");
                 return true;
             }
 
             if (joueurs.get(3).coordsPion[1] == 0) {
-                System.out.println(joueurs.get(3).nomJ + "a gagné ! ");
+                System.out.println(joueurs.get(3).nomJ + " a gagné ! ");
                 return true;
             }
         }
