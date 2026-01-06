@@ -123,6 +123,7 @@ public class Affichage {
             // Information sur chaque joueur à chaque tour
             for (Joueur joueur : listeJoueurs) {
                 System.out.println(joueur.nomJ + " (" + joueur.pion + ") | murs restants : " + joueur.nombreMurs);
+                System.out.println(joueur.nomJ + " coordonnées possible : " + Arrays.deepToString(moteurJeu.coupsLegauxPion(joueur.coordsPion).toArray()));
             }
 
             System.out.println();
@@ -148,18 +149,18 @@ public class Affichage {
 
             // L'utilisateur veut bouger son pion
             if (choix == 1) {
-                int[] coordsMvmtSuivant;
                 String mvmtPion;
+
+                ArrayList<int[]> coupsLegaux = moteurJeu.coupsLegauxPion(joueurActuel.coordsPion);
+                ArrayList<int[]> candidats;
 
                 do {
                     System.out.print("Choissisez une direction (G -> GAUCHE, H -> HAUT, D -> DROITE, B -> BAS) : ");
                     mvmtPion = sc.nextLine().toUpperCase().trim();
-                    coordsMvmtSuivant = moteurJeu.coordsProchainMouvement(joueurActuel.coordsPion, mvmtPion);
+                    candidats = moteurJeu.obtenirCoupsDansDirection(mvmtPion, joueurActuel.coordsPion, coupsLegaux);
+                } while (!moteurJeu.mouvementValide(mvmtPion, candidats));
 
-                } while (!moteurJeu.mouvementValide(joueurActuel.coordsPion, mvmtPion,coordsMvmtSuivant));
-
-                // Le pion a été déplacé de manière correcte.
-                moteurJeu.bougerPion(joueurActuel, coordsMvmtSuivant);
+                moteurJeu.bougerPion(joueurActuel, candidats.getFirst());
             }
 
             // L'utilisateur veut placer un mur

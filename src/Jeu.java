@@ -25,7 +25,6 @@ public class Jeu {
         if (nombreJoueurs == 4) {
             listeJoueurs.add(new Joueur("J3", "V", "\u001B[32m", new int[]{4, 0}, 10));
             listeJoueurs.add(new Joueur("J4", "J", "\u001B[93m", new int[]{4, 8}, 10));
-
             // Change le nombre de murs
             for (Joueur joueur : listeJoueurs) {
                 joueur.nombreMurs = 5;
@@ -301,74 +300,64 @@ public class Jeu {
      * @return les coups légaux que peut effectuer le pion.
      */
     public ArrayList<int[]> coupsLegauxPion(int[] coordsPion) {
-        ArrayList<int[]> listeCoupsLegaux = new ArrayList<>();
+        ArrayList<int[]> coupsAutorisesPion = new ArrayList<>();
+        int[][] directionsPossibles = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
+        int deplacementVertical, deplacementHorizontal;
 
-        int lignePionJ = coordsPion[0];
-        int colonnePionJ = coordsPion[1];
+        for (int[] direction : directionsPossibles) {
+            int[] coordsCoupLegal = Arrays.copyOf(coordsPion, coordsPion.length);
 
-        int[] mvmtGauche = {lignePionJ, colonnePionJ - 1};
-        int[] mvmtDroit = {lignePionJ, colonnePionJ + 1};
+            deplacementVertical = direction[0];
+            deplacementHorizontal = direction[1];
 
-        int[] mvmtGaucheSaut = {lignePionJ, colonnePionJ - 2};
-        int[] mvmtDroitSaut = {lignePionJ, colonnePionJ + 2};
+            coordsCoupLegal[0] += deplacementVertical;
+            coordsCoupLegal[1] += deplacementHorizontal;
 
-        int[] mvmtHaut = {lignePionJ - 1, colonnePionJ};
-        int[] mvmtBas = {lignePionJ + 1, colonnePionJ};
+            if ((coordsCoupLegal[0] > -1 && coordsCoupLegal[0] < TAILLE_PLATEAU
+                    && coordsCoupLegal[1] > -1 && coordsCoupLegal[1] < TAILLE_PLATEAU)
+                    && !murBloqueMouvement(coordsPion, coordsCoupLegal)) {
 
-        int[] mvmtHautSaut = {lignePionJ - 2, colonnePionJ};
-        int[] mvmtBasSaut = {lignePionJ + 2, colonnePionJ};
+                if (!this.plateau[coordsCoupLegal[0]][coordsCoupLegal[1]].equals(".")) {
+                    int[] saut = {
+                            coordsCoupLegal[0] + deplacementVertical,
+                            coordsCoupLegal[1] + deplacementHorizontal
+                    };
 
+                    if (saut[0] > -1 && saut[0] < TAILLE_PLATEAU
+                            && saut[1] > -1 && saut[1] < TAILLE_PLATEAU) {
 
+                        if (!murBloqueMouvement(coordsCoupLegal, saut)) {
+                            coupsAutorisesPion.add(saut);
+                        } else {
+                            int[] d1 = {coordsCoupLegal[0], coordsCoupLegal[1]};
+                            int[] d2 = {coordsCoupLegal[0], coordsCoupLegal[1]};
 
-        // Mouvement à gauche : on vérifie que le pion n'est pas aux extrémités du plateau.
-        if (colonnePionJ > 0 && !murBloqueMouvement(coordsPion, mvmtGauche)) {
-            // On regarde si un autre pion est à gauche du joueur.
-            if (!this.plateau[lignePionJ][colonnePionJ - 1].equals(".")) {
-                // On regarde si on peut sauter par-dessus le pion et qu'il n'y a pas un mur qui entrave le saut.
-                if ((colonnePionJ - 2 > -1 && !murBloqueMouvement(mvmtGauche, mvmtGaucheSaut)) ) {
-                    listeCoupsLegaux.add(mvmtGaucheSaut);
+                            if (deplacementVertical == 0) {
+                                d1[0] -= 1;
+                                d2[0] += 1;
+                            } else {
+                                d1[1] -= 1;
+                                d2[1] += 1;
+                            }
+
+                            if (!murBloqueMouvement(coordsCoupLegal, d1)) {
+                                coupsAutorisesPion.add(d1);
+                            }
+
+                            if (!murBloqueMouvement(coordsCoupLegal, d2)) {
+                                coupsAutorisesPion.add(d2);
+                            }
+                        }
+                    }
                 }
+
+                coupsAutorisesPion.add(coordsCoupLegal);
             }
-            else
-                listeCoupsLegaux.add(mvmtGauche);
         }
-        // // Mouvement en haut : on vérifie que le pion n'est pas aux extrémités du plateau.
-        if (lignePionJ > 0 && !murBloqueMouvement(coordsPion, mvmtHaut)) {
-            // On regarde si un autre pion est en haut du joueur.
-            if (!this.plateau[lignePionJ - 1][colonnePionJ].equals(".")) {
-                // On regarde si on peut sauter par-dessus le pion et qu'il n'y a pas un mur qui entrave le saut.
-                if (lignePionJ - 2 > -1 && !murBloqueMouvement(mvmtHaut, mvmtHautSaut)) {
-                    listeCoupsLegaux.add(mvmtHautSaut);
-                }
-            }
-            else
-                listeCoupsLegaux.add(mvmtHaut);
-        }
-        // // Mouvement à droite : on vérifie que le pion n'est pas aux extrémités du plateau.
-        if (colonnePionJ < TAILLE_PLATEAU - 1 && !murBloqueMouvement(coordsPion, mvmtDroit)) {
-            // On regarde si un autre pion est à droite du joueur.
-            if (!this.plateau[lignePionJ][colonnePionJ + 1].equals(".")) {
-                // On regarde si on peut sauter par-dessus le pion et qu'il n'y a pas un mur qui entrave le saut.
-                if (colonnePionJ + 2 < TAILLE_PLATEAU && !murBloqueMouvement(mvmtDroit, mvmtDroitSaut)) {
-                    listeCoupsLegaux.add(mvmtDroitSaut);
-                }
 
-            } else
-                listeCoupsLegaux.add(mvmtDroit);
-        }
-        // // Mouvement en bas : on vérifie que le pion n'est pas aux extrémités du plateau.
-        if (lignePionJ < TAILLE_PLATEAU - 1 && !murBloqueMouvement(coordsPion, mvmtBas))
-            // On regarde si un autre pion est en bas du joueur.
-            if (!this.plateau[lignePionJ + 1][colonnePionJ].equals(".")) {
-                // On regarde si on peut sauter par-dessus le pion et qu'il n'y a pas un mur qui entrave le saut.
-                if (lignePionJ + 2 < TAILLE_PLATEAU && !murBloqueMouvement(mvmtBas, mvmtBasSaut)) {
-                    listeCoupsLegaux.add(mvmtBasSaut);
-                }
-            } else
-                listeCoupsLegaux.add(mvmtBas);
-
-        return listeCoupsLegaux;
+        return coupsAutorisesPion;
     }
+
 
     /**
      * Vérifie qu'il y a toujours au moins un chemin vers la fin pour chaque joueur.
@@ -452,18 +441,8 @@ public class Jeu {
         return false;
     }
 
-    /**
-     * Vérifie si le mouvement que veut effectuer le joueur est valide
-     *
-     * @param coordsPion un tableau avec les coordonnées actuelles du pion
-     *
-     * @param typeMouvement le type de mouvement que le joueur effectue (G → Gauche, H → Haut, D → Droit, B → Bas)
-     *
-     * @param coordsMvmt un tableau contenant les coordinates du mouvement à effectuer.
-     *
-     * @return vrai (true) si le mouvement est possible, faux (false) sinon.
-     */
-    public boolean mouvementValide(int[] coordsPion, String typeMouvement, int[] coordsMvmt) {
+
+    public boolean mouvementValide(String typeMouvement, ArrayList<int[]> mouvementPossibles) {
         List<String> mvmtCorrects = Arrays.asList("G", "H", "D", "B");
 
         // Le mouvement n'existe pas
@@ -472,66 +451,41 @@ public class Jeu {
             return false;
         }
         // Le pion sera en dehors du plateau.
-        else if (coordsMvmt[0] == -1 || coordsMvmt[0] >= TAILLE_PLATEAU || coordsMvmt[1] == -1 || coordsMvmt[1] >=TAILLE_PLATEAU) {
-            System.out.println("Erreur : le pion sort du plateau ! ");
-            return false;
-        }
-        // Un mur bloque le joueur.
-        else if(murBloqueMouvement(coordsPion, coordsMvmt)) {
-            System.out.println("Erreur : un mur bloque le passage ! ");
+        if (mouvementPossibles.isEmpty()) {
+            System.out.println("Erreur : mouvement impossible ! Un mur peut obstruer le passage, ou le pion sort du plateau ! ");
             return false;
         }
         // Le mouvement est valide.
         return true;
     }
 
-    /**
-     * Renvoie les coordonnées du prochain mouvement effectué à un pion.
-     *
-     * @param coordsJoueur la position actuelle du pion
-     *
-     * @param typeMouvement le mouvement que le pion effectue (G : gauche, H : Haut, D : Droit, B : Bas)
-     *
-     * @return un tableau contenant les coordonnées du pion après mouvement
-     */
-    public int[] coordsProchainMouvement(int[] coordsJoueur, String typeMouvement) {
-        int[] coordsMvmt = new int[2];
+    public ArrayList<int[]> obtenirCoupsDansDirection(String typeMouvement, int[] coordsPion, ArrayList<int[]> coupsAutorises) {
+        ArrayList<int[]> candidats = new ArrayList<>();
 
         switch (typeMouvement) {
             case "G":
-                coordsMvmt[0] = coordsJoueur[0];
-                coordsMvmt[1] = coordsJoueur[1] - 1;
-
-                if (coordsMvmt[1] > 0 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
-                        coordsMvmt[1]--;
+                for (int[] coups : coupsAutorises)
+                    if (coups[1] < coordsPion[1])
+                        candidats.add(coups);
                 break;
-
             case "H":
-                coordsMvmt[0] = coordsJoueur[0] - 1;
-                coordsMvmt[1] = coordsJoueur[1];
-
-                if (coordsMvmt[0] > 0 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
-                        coordsMvmt[0]--;
+                for (int[] coups : coupsAutorises)
+                    if (coups[0] < coordsPion[0])
+                        candidats.add(coups);
                 break;
-
             case "D":
-                coordsMvmt[0] = coordsJoueur[0];
-                coordsMvmt[1] = coordsJoueur[1] + 1;
-
-                if (coordsMvmt[1] < TAILLE_PLATEAU - 1 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
-                        coordsMvmt[1]++;
+                for (int[] coups : coupsAutorises)
+                    if (coups[1] > coordsPion[1])
+                        candidats.add(coups);
                 break;
-
-            case"B":
-                coordsMvmt[0] = coordsJoueur[0] + 1;
-                coordsMvmt[1] = coordsJoueur[1];
-
-                if (coordsMvmt[0] < TAILLE_PLATEAU - 1 && !this.plateau[coordsMvmt[0]][coordsMvmt[1]].equals("."))
-                        coordsMvmt[0]++;
+            case "B":
+                for (int[] coups : coupsAutorises)
+                    if (coups[0] > coordsPion[0])
+                        candidats.add(coups);
                 break;
         }
 
-        return coordsMvmt;
+        return candidats;
     }
 
     /**

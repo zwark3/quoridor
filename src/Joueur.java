@@ -3,7 +3,6 @@ public class Joueur {
     String nomJ;
     String pion;
     String couleurPion;
-
     int[] coordsPion;
     int nombreMurs;
 
