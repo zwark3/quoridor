@@ -332,7 +332,6 @@ public class Jeu {
 
         // On boucle sur chaque direction possible
         for (int[] direction : directionsPossibles) {
-            int ligne, colonne;
 
             // coordsCoupLegal = coordsPion ne marcherait pas, car tableaux auraient la même adresse
             // coordsCoupLegal = {coordsPion[0], coordsPion[1] marche aussi}
@@ -341,24 +340,21 @@ public class Jeu {
             offsetVertical = direction[0];
             offsetHorizontal = direction[1];
 
-            ligne = coordsCoupLegal[0];
-            colonne = coordsCoupLegal[1];
-
-            ligne += offsetVertical;
-            colonne += offsetHorizontal;
+            coordsCoupLegal[0] += offsetVertical;
+            coordsCoupLegal[1] += offsetHorizontal;
 
             // Vérifie si le pion sort du plateau.
-            if ((ligne > -1 && ligne < TAILLE_PLATEAU && colonne > -1 && colonne < TAILLE_PLATEAU) &&
+            if ((coordsCoupLegal[0] > -1 && coordsCoupLegal[0] < TAILLE_PLATEAU && coordsCoupLegal[1] > -1 && coordsCoupLegal[1] < TAILLE_PLATEAU) &&
                     !murBloqueMouvement(coordsPion, coordsCoupLegal)) {
 
                 // On regarde s'il y a pion ennemi là où le pion du joueur est censé se poser.
-                if (!this.plateau[ligne][colonne].equals(".")) {
+                if (!this.plateau[coordsCoupLegal[0]][coordsCoupLegal[1]].equals(".")) {
                     // Le saut arrive à la case adjacente à celle du pion ennemi. Autrement dit, un décalage de 1.
-                    int[] saut = {ligne + offsetVertical, colonne + offsetHorizontal};
+                    int[] saut = {coordsCoupLegal[0] + offsetVertical, coordsCoupLegal[1] + offsetHorizontal};
 
                     // Vérifie si le saut est en dehors du plateau.
                     if (saut[0] > -1 && saut[0] < TAILLE_PLATEAU && saut[1] > -1 && saut[1] < TAILLE_PLATEAU) {
-                        if (!murBloqueMouvement(coordsCoupLegal, saut) && !this.plateau[saut[0]][saut[0]].equals("."))
+                        if (!murBloqueMouvement(coordsCoupLegal, saut) && !this.plateau[saut[0]][saut[1]].equals("."))
                             coupsAutorisesPion.add(saut);
                     }
                 }
