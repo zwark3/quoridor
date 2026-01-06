@@ -195,7 +195,7 @@ public class Affichage {
         }
 
         // Fin de partie
-        System.out.println(joueurActuel.nomJ + " a remporté la partie !");
+        System.out.print(joueurActuel.nomJ + " a remporté la partie !");
         System.out.println("Nombre de coups total : " + (tour+1));
 
     }

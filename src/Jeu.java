@@ -20,7 +20,7 @@ public class Jeu {
         ArrayList<Joueur> listeJoueurs = new ArrayList<>();
 
         listeJoueurs.add(new Joueur("J1", "R", "\u001B[31m", new int[]{0, 4}, 10));
-        listeJoueurs.add(new Joueur("J2", "B", "\u001B[36m", new int[]{8, 4}, 10));
+        listeJoueurs.add(new Joueur("J2", "B", "\u001B[34m", new int[]{8, 4}, 10));
 
         if (nombreJoueurs == 4) {
             listeJoueurs.add(new Joueur("J3", "V", "\u001B[32m", new int[]{4, 0}, 10));
@@ -319,72 +319,54 @@ public class Jeu {
                     && !murBloqueMouvement(coordsPion, coordsCoupLegal)) {
 
                 if (!this.plateau[coordsCoupLegal[0]][coordsCoupLegal[1]].equals(".")) {
-                    int[] saut = {
-                            coordsCoupLegal[0] + deplacementVertical,
-                            coordsCoupLegal[1] + deplacementHorizontal
-                    };
+                    int[] saut = {coordsCoupLegal[0] + deplacementVertical, coordsCoupLegal[1] + deplacementHorizontal};
 
                     if (saut[0] > -1 && saut[0] < TAILLE_PLATEAU && saut[1] > -1 && saut[1] < TAILLE_PLATEAU) {
-
-                        if (!murBloqueMouvement(coordsCoupLegal, saut)) {
+                        if (!murBloqueMouvement(coordsCoupLegal, saut))
                             coupsAutorisesPion.add(saut);
-                        }
-                        else {
-                            int[] d1 = {coordsCoupLegal[0], coordsCoupLegal[1]};
-                            int[] d2 = {coordsCoupLegal[0], coordsCoupLegal[1]};
-
-                            if (deplacementVertical == 0) {
-                                d1[0] -= 1;
-                                d2[0] += 1;
-                            } else {
-                                d1[1] -= 1;
-                                d2[1] += 1;
-                            }
-
-                            if (!murBloqueMouvement(coordsCoupLegal, d1)) {
-                                coupsAutorisesPion.add(d1);
-                            }
-
-                            if (!murBloqueMouvement(coordsCoupLegal, d2)) {
-                                coupsAutorisesPion.add(d2);
-                            }
-                        }
                     }
                 }
-                else {
+                else
                     coupsAutorisesPion.add(coordsCoupLegal);
-                }
             }
         }
 
         return coupsAutorisesPion;
     }
 
-
+    /**
+     * Retourne les coordonnées du mouvement que le joueur veut effectuer.
+     *
+     * @param typeMouvement le type de mouvement (G -> Gauche, H -> Haut, D -> Droit, B -> Bas)
+     *
+     * @param coordsPion les coordonnées du pion
+     *
+     * @param coupsAutorises les coups légaux que peut effectuer le pion.
+     *
+     * @return une liste avec les coordonnées du nouveau mouvement.
+     */
     public ArrayList<int[]> obtenirCoupsDansDirection(String typeMouvement, int[] coordsPion, ArrayList<int[]> coupsAutorises) {
         ArrayList<int[]> candidats = new ArrayList<>();
 
-        switch (typeMouvement) {
-            case "G":
-                for (int[] coups : coupsAutorises)
+        for (int[] coups : coupsAutorises) {
+            switch (typeMouvement) {
+                case "G":
                     if (coups[1] < coordsPion[1])
                         candidats.add(coups);
-                break;
-            case "H":
-                for (int[] coups : coupsAutorises)
+                    break;
+                case "H":
                     if (coups[0] < coordsPion[0])
                         candidats.add(coups);
-                break;
-            case "D":
-                for (int[] coups : coupsAutorises)
-                    if (coups[1] > coordsPion[1])
-                        candidats.add(coups);
-                break;
-            case "B":
-                for (int[] coups : coupsAutorises)
+                    break;
+                case "D":
+
+                    if (coups[1] > coordsPion[1]) candidats.add(coups);
+                    break;
+                case "B":
                     if (coups[0] > coordsPion[0])
                         candidats.add(coups);
-                break;
+                    break;
+            }
         }
 
         return candidats;
