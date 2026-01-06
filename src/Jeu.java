@@ -301,6 +301,7 @@ public class Jeu {
      */
     public ArrayList<int[]> coupsLegauxPion(int[] coordsPion) {
         ArrayList<int[]> coupsAutorisesPion = new ArrayList<>();
+
         int[][] directionsPossibles = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
         int deplacementVertical, deplacementHorizontal;
 
@@ -323,12 +324,12 @@ public class Jeu {
                             coordsCoupLegal[1] + deplacementHorizontal
                     };
 
-                    if (saut[0] > -1 && saut[0] < TAILLE_PLATEAU
-                            && saut[1] > -1 && saut[1] < TAILLE_PLATEAU) {
+                    if (saut[0] > -1 && saut[0] < TAILLE_PLATEAU && saut[1] > -1 && saut[1] < TAILLE_PLATEAU) {
 
                         if (!murBloqueMouvement(coordsCoupLegal, saut)) {
                             coupsAutorisesPion.add(saut);
-                        } else {
+                        }
+                        else {
                             int[] d1 = {coordsCoupLegal[0], coordsCoupLegal[1]};
                             int[] d2 = {coordsCoupLegal[0], coordsCoupLegal[1]};
 
@@ -350,13 +351,45 @@ public class Jeu {
                         }
                     }
                 }
-
-                coupsAutorisesPion.add(coordsCoupLegal);
+                else {
+                    coupsAutorisesPion.add(coordsCoupLegal);
+                }
             }
         }
 
         return coupsAutorisesPion;
     }
+
+
+    public ArrayList<int[]> obtenirCoupsDansDirection(String typeMouvement, int[] coordsPion, ArrayList<int[]> coupsAutorises) {
+        ArrayList<int[]> candidats = new ArrayList<>();
+
+        switch (typeMouvement) {
+            case "G":
+                for (int[] coups : coupsAutorises)
+                    if (coups[1] < coordsPion[1])
+                        candidats.add(coups);
+                break;
+            case "H":
+                for (int[] coups : coupsAutorises)
+                    if (coups[0] < coordsPion[0])
+                        candidats.add(coups);
+                break;
+            case "D":
+                for (int[] coups : coupsAutorises)
+                    if (coups[1] > coordsPion[1])
+                        candidats.add(coups);
+                break;
+            case "B":
+                for (int[] coups : coupsAutorises)
+                    if (coups[0] > coordsPion[0])
+                        candidats.add(coups);
+                break;
+        }
+
+        return candidats;
+    }
+
 
 
     /**
@@ -441,7 +474,6 @@ public class Jeu {
         return false;
     }
 
-
     public boolean mouvementValide(String typeMouvement, ArrayList<int[]> mouvementPossibles) {
         List<String> mvmtCorrects = Arrays.asList("G", "H", "D", "B");
 
@@ -452,40 +484,11 @@ public class Jeu {
         }
         // Le pion sera en dehors du plateau.
         if (mouvementPossibles.isEmpty()) {
-            System.out.println("Erreur : mouvement impossible ! Un mur peut obstruer le passage, ou le pion sort du plateau ! ");
+            System.out.println("Erreur : un mur peut obstruer le passage, ou le pion sort du plateau ! ");
             return false;
         }
         // Le mouvement est valide.
         return true;
-    }
-
-    public ArrayList<int[]> obtenirCoupsDansDirection(String typeMouvement, int[] coordsPion, ArrayList<int[]> coupsAutorises) {
-        ArrayList<int[]> candidats = new ArrayList<>();
-
-        switch (typeMouvement) {
-            case "G":
-                for (int[] coups : coupsAutorises)
-                    if (coups[1] < coordsPion[1])
-                        candidats.add(coups);
-                break;
-            case "H":
-                for (int[] coups : coupsAutorises)
-                    if (coups[0] < coordsPion[0])
-                        candidats.add(coups);
-                break;
-            case "D":
-                for (int[] coups : coupsAutorises)
-                    if (coups[1] > coordsPion[1])
-                        candidats.add(coups);
-                break;
-            case "B":
-                for (int[] coups : coupsAutorises)
-                    if (coups[0] > coordsPion[0])
-                        candidats.add(coups);
-                break;
-        }
-
-        return candidats;
     }
 
     /**

@@ -9,18 +9,18 @@ public class Affichage {
     public static void menuPresentation() {
         int choixMenu, rejouer;
         String menuPresentation =
-               """
-               * * * * * * * * * * * * * * * * * * * *
-               *   BIENVENUE SUR LE JEU DU QUORIDOR  *
-               * 1. Joueur contre joueur             *
-               * 2. Joueur contre robot              *
-               * 3. Règles du jeu                    *
-               * 4. Informations                     *
-               * 5. Quitter                          *
-               *                                     *
-               *           Faites un choix.          *
-               * * * * * * * * * * * * * * * * * * * *
-               """;
+                """
+                * * * * * * * * * * * * * * * * * * * *
+                *   BIENVENUE SUR LE JEU DU QUORIDOR  *
+                * 1. Joueur contre joueur             *
+                * 2. Joueur contre robot              *
+                * 3. Règles du jeu                    *
+                * 4. Informations                     *
+                * 5. Quitter                          *
+                *                                     *
+                *           Faites un choix.          *
+                * * * * * * * * * * * * * * * * * * * *
+                """;
         do {
             System.out.println(menuPresentation);
             choixMenu = sc.nextInt();
