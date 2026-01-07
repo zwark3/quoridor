@@ -134,4 +134,25 @@ class JeuTest {
         assertTrue(jeu.murBloqueMouvement(J4.coordsPion, mouvementVerticalBloque), "cas mouvement mur bloque verticalement en haut");
     }
 
+    @Test
+    void determineCoupsLegauxPion() {
+        for (Joueur joueur : joueurs) {
+            assertEquals(3, jeu.determineCoupsLegauxPion(joueur.coordsPion).size(), "cas chaque joueur débute avec 3 mouvements possibles");
+        }
+
+        Joueur J1 = joueurs.getFirst();
+        jeu.placerMurHorizontal(J1.coordsPion[0] + 1, J1.coordsPion[1] + 1);
+        assertEquals(2, jeu.determineCoupsLegauxPion(J1.coordsPion).size(), "cas mur horizontal bloque mouvement");
+        jeu.retirerMurHorizontal(J1.coordsPion[0] + 1, J1.coordsPion[1] + 1);
+
+        Joueur J2 = joueurs.get(1);
+        jeu.placerMurVertical(8 , 4);
+        assertEquals(2, jeu.determineCoupsLegauxPion(J2.coordsPion).size(), "cas mur vertical bloque mouvement");
+        jeu.retirerMurHorizontal(8, 4);
+
+        jeu.placerMurVertical(8 , 4);
+        jeu.placerMurVertical(8, 5);
+        assertEquals(1, jeu.determineCoupsLegauxPion(J2.coordsPion).size(), "cas deux murs verticaux un mouvement restant");
+    }
+
 }

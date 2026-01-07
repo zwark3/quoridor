@@ -63,6 +63,7 @@ public class Affichage {
                                     ne les bloque, le joueur actuel peut sauter par-dessus le pion ennemi.
                                     
                                     POSITIONNEMENT DES MURS
+                                    
                                     Les murs sont des élements plats de deux cases de large placées entre deux groupes de deux
                                     carrées.
                                     Ces barrières peuvent facilier la progession du jouer ou bloquer celle de l'adversaire.
@@ -70,6 +71,7 @@ public class Affichage {
                                     
                                     
                                     BUT
+                                    
                                     Le premier joueur qui atteint l'une des cases opposées à sa rangée de départ gagne.
                                     """;
                     System.out.println(reglesPresentation);
@@ -100,7 +102,7 @@ public class Affichage {
         int nombreJoueurs;
 
         do {
-            System.out.print("Entrez le nombre de joueurs (compris entre 2 et 4) :  ");
+            System.out.print("Entrez le nombre de joueurs (2 ou 4 uniquement) :  ");
             nombreJoueurs = sc.nextInt();
         } while (nombreJoueurs < 2 || nombreJoueurs > 4 );
 
@@ -133,7 +135,8 @@ public class Affichage {
             // Information sur chaque joueur à chaque tour
             for (Joueur joueur : listeJoueurs) {
                 System.out.println(joueur.nomJ + " (" + joueur.pion + ") | murs restants : " + joueur.nombreMurs);
-                System.out.println(joueur.nomJ + " coordonnées possible : " + Arrays.deepToString(moteurJeu.determineCoupsLegauxPion(joueur.coordsPion).toArray()));
+                System.out.println("Coordonnées possibles (" + joueur.nomJ + ") : " + Arrays.deepToString(moteurJeu.determineCoupsLegauxPion(joueur.coordsPion).toArray()));
+                System.out.println();
             }
 
             System.out.println();

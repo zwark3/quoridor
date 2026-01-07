@@ -275,7 +275,7 @@ public class Jeu {
             retirerMurVertical(ligneUtil, colonneUtil);
 
         if (!cheminValide) {
-            System.out.println("Erreur : ce mur bloque un joueur !");
+            System.out.println("Erreur : ce mur empêche à un joueur d'arriver à la fin !");
             return false;
         }
 
@@ -526,7 +526,7 @@ public class Jeu {
         }
         // Le pion sera en dehors du plateau.
         if (mouvementPossibles.isEmpty()) {
-            System.out.println("Erreur : un mur peut obstruer le passage, ou le pion sort du plateau ! ");
+            System.out.println("Erreur : un mur ou un joueur peut obstruer le passage, ou le pion sort du plateau ! ");
             return false;
         }
         // Le mouvement est valide.
