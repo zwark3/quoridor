@@ -6,9 +6,11 @@ import java.util.List;
  * La classe Jeu détient toutes les méthodes en rapport avec la logique et la structure du jeu.
  */
 public class Jeu {
+
+    // Taille du plateau
     public static final int TAILLE_PLATEAU = 9;
 
-    // Couleur des pions
+    // ANSI — Couleur des pions
     public static final String COULEUR_ROUGE = "\u001B[31m";
     public static final String COULEUR_BLEU = "\u001B[34m";
     public static final String COULEUR_VERT = "\u001B[32m";
@@ -20,9 +22,9 @@ public class Jeu {
     String[][] mursV;
 
     Jeu() {
-        this.plateau = new String[9][9];
-        this.mursH = new String[8][9];
-        this.mursV = new String[9][8];
+        this.plateau = new String[TAILLE_PLATEAU][TAILLE_PLATEAU];
+        this.mursH = new String[TAILLE_PLATEAU - 1][TAILLE_PLATEAU];
+        this.mursV = new String[TAILLE_PLATEAU][TAILLE_PLATEAU - 1];
     }
 
 
